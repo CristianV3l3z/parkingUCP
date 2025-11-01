@@ -1,0 +1,16 @@
+/* ====== estilos base de la vista "Datos" ====== */
+.datos-container {
+  padding: 40px 20px;
+  background: var(--bg);
+  min-height: 100vh;
+}
+
+.datos-container h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.datos-container .muted {
+  color: var(--muted);
+}

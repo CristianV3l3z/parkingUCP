@@ -1,0 +1,538 @@
+:root{
+  --bg:#f5f3f2;
+  --card:#ffffff;
+  --accent:#ffcc00; /* amarillo parking */
+  --muted:#8a8a8a;
+  --dark:#121212;
+  --radius:14px;
+}
+
+/* Reset básico */
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background:var(--bg);
+  color:var(--dark);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Contenedor centrado */
+.container{
+  width: min(1200px, 92%);
+  margin: 0 auto;
+}
+
+/* Header */
+.site-header{
+  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(249,247,246,0.95));
+  position: sticky;
+  top:0;
+  z-index:40;
+  border-bottom: 1px solid rgba(0,0,0,0.03);
+  backdrop-filter: blur(4px);
+}
+.header-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  padding:18px 0;
+}
+
+/* Logo */
+.logo a{ display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--dark) }
+.logo-icon{ font-size:22px; transform:translateY(-2px) }
+.logo-text{ font-family: "Playfair Display", serif; font-size:22px; font-weight:700 }
+
+/* Nav */
+.main-nav{ display:flex; gap:22px; align-items:center }
+.nav-link{
+  color:var(--dark); text-decoration:none; font-weight:500; font-size:15px; padding:6px 0;
+  position:relative;
+}
+.nav-link:hover::after{
+  content:""; position:absolute; left:0; bottom:-8px; width:100%; height:2px; background:var(--accent); border-radius:2px;
+}
+
+/* Buttons */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:10px 18px; border-radius:30px; font-weight:600; cursor:pointer; border:none; text-decoration:none;
+}
+.btn-primary{ background:var(--dark); color:white; box-shadow: 0 8px 20px rgba(18,18,18,0.12) }
+.btn-ghost{ background:transparent; color:var(--dark); border:1px solid rgba(0,0,0,0.06); padding:8px 16px; border-radius:20px }
+
+/* Hero */
+.hero{
+  min-height:420px;
+  padding: 2rem 1.5rem;
+  background-size:cover;
+  background-position:center;
+  display:flex; align-items:center;
+  padding:70px 0;
+  position:relative;
+}
+.hero::after{
+  content:"";
+  position:absolute; 
+  inset:0; background: 
+  linear-gradient(0deg, rgba(18,18,18,0.08) 0%, rgba(255,204,0,0.06) 30%, rgba(255,255,255,0.0) 60%);
+  box-sizing: border-box;
+  padding: 1.25rem 1.5rem;     /* menos padding vertical */
+}
+.hero-overlay{ 
+  display:flex; 
+  gap:40px; align-items:flex-start; 
+  position:relative; z-index:2; 
+  padding:0px 0; }
+
+/* Hero left */
+.hero-left{ 
+  flex:1; 
+  max-width:700px }
+.hero-left h1{ 
+  font-family:"Playfair Display", serif; 
+  font-size:56px; 
+  margin:0 0 10px; 
+  color:var(--dark) }
+.lead{ color:var(--muted); margin-bottom:18px; font-size:16px }
+
+/* Hero stats */
+.stats{ width:300px; display:flex; flex-direction:column; gap:18px; align-items:flex-end }
+.stat{ background:rgba(255,255,255,0.85); padding:16px 20px; border-radius:12px; width:220px; box-shadow:0 6px 18px rgba(0,0,0,0.06) }
+.stat-val{ font-weight:700; font-size:20px }
+.stat-label{ color:var(--muted); font-size:13px }
+
+/* Secciones */
+.servicios-grid{ 
+  display:grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap:40px; 
+  padding:1.25rem 1.5rem; 
+  align-items:center }
+.servicios-card img, .acerca-right img{ width:100%; border-radius:12px; display:block; box-shadow: 0 14px 40px rgba(0,0,0,0.06) }
+.servicios-info h2{ font-family:"Playfair Display"; font-size:44px; margin:0 0 14px }
+.feature-list{ margin-top:16px; list-style:none; padding:0; color:var(--muted) }
+.feature-list li{ padding:8px 0; border-left:4px solid transparent; }
+.feature-list li strong{ color:var(--dark) }
+
+/* Acerca */
+.acerca-section{ display:grid; grid-template-columns: 1fr 520px; gap:40px; padding:80px 0; align-items:center }
+.acerca-left h2{ font-family:"Playfair Display"; font-size:48px; margin:0 0 8px }
+.values{ display:flex; gap:18px; margin-top:20px }
+.value{ background:var(--card); padding:18px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.04) }
+.value h4{ margin:0; font-size:16px }
+
+/* Contacto */
+.contacto-section{ display:grid; grid-template-columns: 1fr 1fr; gap:40px; padding:80px 0; align-items:start }
+.contact-form{ background:var(--card); padding:28px; border-radius:12px; box-shadow:0 12px 30px rgba(0,0,0,0.05) }
+.contact-form label{ display:block; font-size:13px; color:var(--muted); margin-bottom:8px }
+.contact-form input, .contact-form textarea{
+  width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(0,0,0,0.07); margin-bottom:14px; font-size:15px;
+}
+
+/* Header actions alignment */
+.header-actions{ display:flex; gap:12px; align-items:center }
+
+/* Footer */
+.site-footer{ border-top:1px solid rgba(0,0,0,0.04); margin-top:60px; padding:20px 0; color:var(--muted) }
+.site-footer .container{ display:flex; justify-content:space-between; align-items:center }
+
+/* Flash messages */
+.flash-container{ position:fixed; top:88px; right:20px; z-index:80 }
+.flash{ padding:12px 16px; border-radius:10px; box-shadow:0 10px 24px rgba(0,0,0,0.08); margin-bottom:10px }
+.flash-success{ background: #e6ffcc; color: #1e3920 }
+.flash-error{ background:#ffeeee; color:#6a1a1a }
+
+/* Modal */
+.modal{ display:none; position:fixed; inset:0; z-index:100; align-items:center; justify-content:center }
+.modal[aria-hidden="false"]{ display:flex }
+.modal-backdrop{ position:absolute; inset:0; background:rgba(0,0,0,0.45) }
+.modal-panel{ position:relative; background:var(--card); border-radius:12px; padding:22px; width:min(520px,92%); box-shadow:0 30px 80px rgba(0,0,0,0.4) }
+.modal-close{ position:absolute; right:14px; top:8px; border:none; background:transparent; font-size:26px; cursor:pointer }
+.modal-panel h3{ margin:0 0 12px; font-size:20px }
+.modal-panel label{ display:block; margin-top:8px; font-size:13px; color:var(--muted) }
+.modal-panel input{ width:100%; padding:10px 12px; border-radius:8px; border:1px solid rgba(0,0,0,0.08); margin-top:6px }
+
+/* Responsive */
+@media (max-width: 900px){
+  .servicios-grid{ grid-template-columns: 1fr; }
+  .acerca-section{ grid-template-columns: 1fr; }
+  .contacto-section{ grid-template-columns: 1fr; }
+  .hero-left h1{ font-size:34px }
+  .stats{ display:none }
+  .main-nav{ display:none } /* simplificación; puedes cambiar a un menú hamburguesa */
+}
+
+
+
+
+
+
+
+/* =========================
+   Secciones full-screen + scroll-snap
+   ========================= */
+
+:root {
+  --header-height: 80px; /* valor por defecto, será actualizado por JS */
+  --gap-section: 0px;
+}
+
+/* Asegurar que html/body ocupen todo el viewport */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+/* Main container que hará scroll y snap */
+.main-scroll {
+  height: 100vh;                 /* ocupa toda la ventana visual */
+  overflow-y: auto;              /* scroll aquí en lugar de body */
+  scroll-behavior: smooth;       /* smooth por defecto */
+  scroll-snap-type: y mandatory; /* snap vertical obligatorio */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Cada sección (panel) ocupará viewport menos la altura del header */
+.panel {
+  scroll-snap-align: start; /* alineación de snap */
+  min-height: calc(100vh - var(--header-height)); /* visible sin superponerse con header sticky */
+  padding-top: calc(var(--header-height) + 28px);  /* espacio interior para que el contenido no quede debajo del header */
+  padding-bottom: 40px;
+  display: flex;
+  align-items: center; /* centra verticalmente el contenido */
+  gap: var(--gap-section);
+  box-sizing: border-box;
+  position: relative;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+/* Si quieres secciones con contenido centrado horizontalmente (contenedor) */
+.panel > .container {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+/* Hero: si usas imagen de fondo, asegurar overlay */
+.hero.panel {
+  /* background-image ya puesta inline; si no, usar aquí */
+  color: #111;
+}
+
+/* Títulos fluidos: usan clamp para verse bien en pantallas pequeñas y grandes */
+h1 {
+  font-family: "Playfair Display", serif;
+  font-size: clamp(28px, 5vw, 56px); /* se ajusta entre 28 y 56 */
+  margin: 0 0 8px;
+}
+h2 {
+  font-size: clamp(24px, 4vw, 44px);
+}
+
+/* Ajustes adicionales para el layout interno */
+.servicios-grid, .acerca-section, .contacto-section {
+  gap: 30px;
+  align-items: center;
+}
+
+/* Imagenes responsivas dentro de paneles */
+.servicios-card img, .acerca-right img, .contact-right img {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover;
+  display: block;
+}
+
+/* Ajustes del header sticky (para calcular bien su altura) */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  /* Si cambias el padding aquí, el JS ajustará la variable --header-height */
+}
+
+/* Ocultar scrollbars en diseño limpio si quieres (no obligatorio) */
+.main-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+.main-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.12);
+  border-radius: 8px;
+}
+
+/* =========================
+   Responsive tweaks
+   ========================= */
+@media (max-width: 900px) {
+  .panel { padding-top: calc(var(--header-height) + 18px); padding-bottom: 28px; }
+  .panel > .container { flex-direction: column; align-items: flex-start; }
+  .hero .hero-right, .stats { display: none; } /* ocultar estadisticas en pantallas pequeñas */
+  .main-scroll { scroll-snap-type: y proximity; } /* permitir comportamiento más suave en móviles */
+  .logo-text { font-size: 18px; }
+  .nav-link { display: none; } /* simplificación; implementar hamburguesa si hace falta */
+}
+
+@media (min-width: 1200px) {
+  :root { --gap-section: 24px; }
+}
+
+
+
+
+
+
+
+/* tarjeta individual (cada columna) */
+  .vehicle-card {
+    background: var(--card);
+    padding: 14px;
+    border-radius: 12px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+  }
+  .vehicle-avatar {
+    width:56px;
+    height:56px;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:800;
+    font-size:18px;
+    background:rgba(255,255,255,0.02);
+  }
+  .vehicle-body { flex:1 }
+  .vehicle-body h4 { margin:0;font-size:16px;letter-spacing:0.3px }
+  .vehicle-meta { margin-top:6px;font-size:13px;color:var(--muted) }
+  .vehicle-desc { margin-top:8px;font-size:14px;color:var(--muted) }
+  .vehicle-type { display:inline-block;margin-left:8px;padding:6px 8px;border-radius:999px;font-weight:700;font-size:12px }
+  .type-car { background: rgba(255,204,0,0.12); color: var(--accent) }
+  .type-moto { background: rgba(80,170,255,0.08); color: #52a8ff }
+  .vehicle-actions { display:flex;flex-direction:column;gap:8px;margin-left:12px }
+  .btn-action { background:transparent;border:1px solid rgba(0,0,0,0.06);padding:8px 10px;border-radius:8px;cursor:pointer }
+  @media (max-width:900px){
+    .vehicles-grid { grid-template-columns: 1fr !important; }
+  }
+
+
+
+
+  /* filas: asegurar que la lista sea columna y cada tarjeta ocupe 100% */
+#vehiclesList { display:flex;flex-direction:column;gap:12px; }
+.vehicle-card { width:100%; box-sizing:border-box; }
+.vehicle-card .btn-ghost { background: #fff; border:1px solid rgba(0,0,0,0.06); padding:6px 8px; }
+
+
+
+
+
+/* ====== estilos para aside vista cada vez que entra como vigilante ====== */
+/* Sidebar: estilo consistente (añadir al final de style.css) */
+.app-sidebar {
+  width: 240px;
+  background: linear-gradient(180deg, #ffffff, #fbf9f8);
+  border-right: 1px solid rgba(0,0,0,0.03);
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
+}
+
+/* inner wrapper para controlar padding y overflow */
+.app-sidebar .sidebar-inner { display:flex;flex-direction:column;height:100%; }
+
+/* logo */
+.sidebar-logo { display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--dark);font-weight:700;font-size:18px; }
+.sidebar-logo .logo-icon {
+  width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:linear-gradient(180deg,#eaf4ff,#d9ecff);font-size:18px;box-shadow:0 6px 16px rgba(0,0,0,0.04);
+}
+
+/* nav list: quitar bullets y espacios por defecto */
+.sidebar-nav ul { list-style: none; margin: 18px 0 0 0; padding: 0; display:flex;flex-direction:column; gap:12px; }
+
+/* cada item */
+.sidebar-nav .nav-item {
+  display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;color:var(--dark);text-decoration:none;font-weight:600;
+  transition: background .12s, color .12s, transform .06s;
+}
+.sidebar-nav .nav-item:hover { background: rgba(0,0,0,0.02); transform: translateY(-1px); }
+
+/* icono a la izquierda estilo circulo */
+.sidebar-nav .nav-ico {
+  width:36px;height:36px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.03);font-size:16px;
+}
+
+/* active link */
+.sidebar-nav .nav-item.active { background: rgba(255,204,0,0.10); color: var(--accent); }
+
+/* footer user */
+.sidebar-footer { padding-top:18px;border-top:1px solid rgba(0,0,0,0.03); margin-top:18px; }
+.user-block { display:flex;align-items:center;gap:12px; }
+.user-avatar { width:46px;height:46px;border-radius:10px;background:rgba(0,0,0,0.03);display:flex;align-items:center;justify-content:center;font-weight:800; }
+.user-name { font-weight:700; }
+.user-role { font-size:13px;color:var(--muted); }
+
+/* Small screens: sidebar arriba, horizontal nav */
+@media (max-width: 980px) {
+  .app-sidebar { width:100%; height:auto; display:flex;flex-direction:row; align-items:center; padding:12px; }
+  .sidebar-inner { flex-direction:row; gap:10px; align-items:center; width:100%; }
+  .sidebar-nav ul { flex-direction:row; gap:8px; overflow:auto; margin:0 0 0 10px; }
+  .sidebar-footer { display:none; }
+}
+
+/* --------------------------
+   Variables extendidas
+   -------------------------- */
+:root{
+  --bg-soft: #faf9f8;
+  --success: #2da84a;
+  --danger: #ff3b30;
+  --shadow-lg: 0 18px 50px rgba(0,0,0,0.08);
+  --glass: rgba(255,255,255,0.6);
+  --muted-2: #9b9b9b;
+  --transition-fast: 180ms cubic-bezier(.2,.9,.2,1);
+}
+
+/* --------------------------
+   Utilidades rápidas
+   -------------------------- */
+.u-row { display:flex; gap:12px; align-items:center; }
+.u-center { display:flex; align-items:center; justify-content:center; }
+.text-muted { color:var(--muted); }
+.small { font-size:13px; }
+.btn-sm { padding:6px 10px; border-radius:8px; font-weight:700; font-size:14px; }
+
+/* --------------------------
+   Mejoras botones
+   -------------------------- */
+.btn-primary {
+  background: linear-gradient(90deg, var(--accent), #ffb200);
+  color: #111;
+  box-shadow: 0 8px 28px rgba(255,176,0,0.12);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+.btn-primary:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+
+/* ghost con efecto suave */
+.btn-ghost {
+  background: var(--card);
+  border: 1px solid rgba(0,0,0,0.04);
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+.btn-ghost:hover { background: rgba(0,0,0,0.02); transform: translateY(-2px); }
+
+/* --------------------------
+   Badges & indicador
+   -------------------------- */
+.badge {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:20px;
+  height:20px;
+  padding:0 6px;
+  border-radius:999px;
+  background:var(--danger);
+  color:white;
+  font-size:12px;
+  font-weight:700;
+  box-shadow:0 6px 18px rgba(0,0,0,0.08);
+}
+
+/* pequeña versión neutra */
+.badge-soft { background: rgba(0,0,0,0.06); color:var(--muted); }
+
+/* --------------------------
+   Tooltips (CSS only)
+   -------------------------- */
+.tooltip {
+  position:relative;
+  cursor:help;
+}
+.tooltip[data-tip]:hover::after{
+  content: attr(data-tip);
+  position:absolute;
+  bottom: calc(100% + 8px);
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--dark);
+  color:#fff;
+  padding:6px 8px;
+  border-radius:8px;
+  font-size:12px;
+  white-space:nowrap;
+  box-shadow:0 8px 24px rgba(0,0,0,0.25);
+  opacity:1;
+  pointer-events:none;
+  z-index:200;
+}
+
+/* --------------------------
+   Skeleton loader (lista / cards)
+   -------------------------- */
+.skeleton {
+  background: linear-gradient(90deg, rgba(255,255,255,0.7), rgba(240,240,240,0.7), rgba(255,255,255,0.7));
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+  border-radius:8px;
+}
+@keyframes shimmer { 0% { background-position:200% 0 } 100% { background-position:-200% 0 } }
+
+/* --------------------------
+   Vehicle card refined
+   -------------------------- */
+.vehicle-card {
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+.vehicle-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+}
+.vehicle-actions { gap:10px; }
+.vehicle-actions .btn-action {
+  background: linear-gradient(90deg,var(--accent), #ff9f00);
+  color:#111;
+  border:none;
+  box-shadow:0 10px 30px rgba(255,176,0,0.08);
+  padding:8px 12px;
+  border-radius:10px;
+  font-weight:800;
+}
+.vehicle-actions .btn-secondary {
+  background:transparent;
+  border:1px solid rgba(0,0,0,0.06);
+  padding:7px 10px;
+  border-radius:10px;
+}
+
+/* --------------------------
+   Table footer (historial) mejorada
+   -------------------------- */
+#historyTfoot tr:first-child td {
+  background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(250,250,250,0.9));
+  font-weight:800;
+}
+#historyTfoot { border-top: 2px solid rgba(0,0,0,0.04); }
+
+/* --------------------------
+   Accessibility focus
+   -------------------------- */
+:focus { outline: none; box-shadow: 0 0 0 3px rgba(82,168,255,0.12); border-radius:8px; }
+
+/* --------------------------
+   Small screens: collapse sidebar behavior
+   -------------------------- */
+.app-sidebar.collapsed { width:72px; }
+.app-sidebar.collapsed .sidebar-nav .nav-item { justify-content:center; padding:10px; }
+.app-sidebar.collapsed .sidebar-footer { display:none; }

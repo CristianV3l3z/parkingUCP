@@ -1,0 +1,60 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+use App\Models\vehiculo;
+use App\Models\vigilante;
+
+class tiquete extends Model
+{
+    use HasFactory;
+
+    protected $table = 'tiquete';
+    protected $primaryKey = 'id_tiquete';
+    public $timestamps = true;
+
+    protected $fillable = [
+    'codigo_uuid','id_vehiculo','id_vigilante','id_tarifa',
+    'hora_entrada','hora_salida','estado','observaciones','activo'
+    ];
+
+    protected $casts = [
+    'activo' => 'boolean',
+    ];
+
+    // scope
+    public function scopeActive($query) {
+        return $query->where('activo', true);
+    }
+
+    // Generar UUID automáticamente al crear un tiquete
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->codigo_uuid)) {
+                $model->codigo_uuid = (string) Str::uuid();
+            }
+        });
+    }
+
+    // Relaciones
+    public function vehiculo()
+    {
+        return $this->belongsTo(vehiculo::class, 'id_vehiculo', 'id_vehiculo');
+    }
+
+    public function vigilante()
+    {
+        return $this->belongsTo(vigilante::class, 'id_vigilante', 'id_vigilante');
+    }
+
+    public function tarifa()
+    {
+        return $this->belongsTo(tarifa::class, 'id_tarifa', 'id_tarifa');
+    }
+}
