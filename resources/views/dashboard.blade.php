@@ -4,42 +4,200 @@
 @section('content')
 <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
-<!-- NUEVA SECCIÓN: Vehículos (lectura) -->
-<div class="container" style="padding:20px 20px 80px 20px;">
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;">
-    <div>
-      <h2 style="margin:0 0 8px 0">Vehículos registrados</h2>
+
+
+<!-- Small responsive overrides specifically for this view -->
+<style>
+  :root{
+    --muted: #6f6f6f;
+    --card: #fff;
+  }
+
+  /* Container */
+  .dash-container {
+    padding: 18px;
+    box-sizing: border-box;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* Header row (mobile-first) */
+  .dash-header {
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    align-items:stretch;
+  }
+  .dash-header .title-wrap { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+  .dash-title { margin:0; font-size:18px; font-weight:800; }
+
+  /* Actions: search + refresh */
+  .dash-actions { display:flex; gap:10px; align-items:center; width:100%; }
+  #dashSearch {
+    flex:1;
+    min-width:0;
+    padding:10px 14px;
+    border-radius:12px;
+    border:1px solid rgba(0,0,0,0.06);
+    background:transparent;
+    font-size:15px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.02);
+  }
+  #refreshBtn { padding:10px 12px; border-radius:10px; }
+
+  /* KPIs: scroll horizontal on mobile */
+  .kpis {
+    display:flex;
+    gap:12px;
+    margin-top:10px;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:6px;
+  }
+  .kpis .stat {
+    min-width:140px;
+    flex:0 0 auto;
+    background:var(--card);
+    border-radius:12px;
+    padding:12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+  }
+  .kpis .stat-label { color:var(--muted); font-size:13px }
+  .kpis .stat-val { font-weight:800; font-size:20px; margin-top:6px }
+
+  /* Vehicles list */
+  .vehicles-wrap { margin-top:18px; }
+  #dashVehicles { display:flex; flex-direction:column; gap:12px; }
+
+  /* Vehicle card (mobile-first column) */
+  .vehicle-card {
+    background:var(--card);
+    border-radius:12px;
+    padding:12px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.04);
+    border:1px solid rgba(0,0,0,0.03);
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .vehicle-top { display:flex; gap:12px; align-items:center; }
+  .vehicle-avatar { width:56px;height:56px;border-radius:10px;background:rgba(0,0,0,0.04);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;flex-shrink:0; }
+  .vehicle-meta .plate { font-weight:900; font-size:16px; white-space:nowrap; text-overflow:ellipsis; overflow:hidden }
+  .vehicle-meta .model { color:var(--muted); font-size:13px }
+
+  .vehicle-bottom { display:flex; gap:10px; align-items:center; justify-content:space-between; width:100%; flex-wrap:wrap; }
+  .vehicle-actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .vehicle-actions .btn-ghost, .vehicle-actions .btn-primary, .vehicle-actions .btn-sm { min-width:96px; flex-shrink:0; }
+
+  /* Ensure buttons wrap to full width on small screens */
+  /* Ajustes móviles: botones en columna y descripción con más espacio */
+@media (max-width:420px){
+  /* Asegurarnos que la parte inferior se apila verticalmente */
+  .vehicle-bottom {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  /* Forzamos que el contenedor de acciones ocupe todo el ancho */
+  .vehicle-actions {
+    width: 100%;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  /* Botones a 100% ancho, sin min-width para que se ajusten */
+  .vehicle-actions .btn-ghost,
+  .vehicle-actions .btn-primary,
+  .vehicle-actions .btn-sm {
+    width: 100%;
+    min-width: 0;
+    padding: 12px 14px;
+    border-radius: 12px;
+    box-sizing: border-box;
+    font-weight: 700;
+  }
+
+  /* Más espacio para la descripción/meta y mejor legibilidad */
+  .vehicle-meta {
+    margin-bottom: 6px;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  /* Aumentar separación entre avatar/título y la descripción en móvil */
+  .vehicle-top { gap: 14px; align-items: flex-start; }
+
+  /* Si tenías texto al final (ej. precio o fecha), lo ponemos alineado a la izquierda */
+  .vehicle-bottom .text-muted,
+  .vehicle-bottom .small {
+    text-align: left;
+  }
+}
+
+
+  /* Modals responsive: use almost-fullscreen on small screens */
+  #profileModal > div,
+  #ticketModal > div,
+  #miPasarelaModal > div {
+    width: 96% !important;
+    max-width: 520px;
+  }
+  #miPasarelaModal .modal-sheet, #ticketModal .modal-sheet { max-height:86vh; overflow:auto; }
+
+  /* Reserve bottom padding when mobile action bar exists (if you use it) */
+  .has-mobile-action-bar .dash-container { padding-bottom:86px; }
+
+  /* Small desktop adjustments */
+  @media (min-width:900px){
+    .dash-header { flex-direction:row; align-items:center; justify-content:space-between; }
+    .dash-actions { width:auto; }
+    .kpis { overflow:visible; }
+    /* vehicle card becomes row on desktop */
+    .vehicle-card { flex-direction:row; align-items:center; justify-content:space-between; gap:12px; }
+    .vehicle-top { flex:1; }
+    .vehicle-bottom { width:auto; gap:12px; justify-content:flex-end; }
+  }
+</style>
+
+<div class="dash-container">
+  <div class="dash-header">
+    <div class="title-wrap">
+      <div>
+        <h2 class="dash-title">Vehículos registrados</h2>
+      </div>
+
+      <div class="dash-actions" aria-label="Acciones de búsqueda">
+        <input id="dashSearch" placeholder="Buscar por placa..." aria-label="Buscar por placa" />
+        <button id="refreshBtn" class="btn-ghost" title="Actualizar lista">⟳ Actualizar</button>
+      </div>
     </div>
 
-    <div style="display:flex;gap:12px;align-items:center;">
-      <input id="dashSearch" placeholder="Buscar por placa..." aria-label="Buscar por placa"
-             style="padding:10px 14px;border-radius:12px;border:1px solid rgba(0,0,0,0.06);background:transparent;min-width:220px;" />
-      <button id="refreshBtn" class="btn-ghost" title="Actualizar lista">⟳ Actualizar</button>
-    </div>
-  </div>
-
-  <!-- KPIs -->
-  <div style="display:flex;gap:16px;margin-top:18px;flex-wrap:wrap;">
-    <div class="stat" style="flex:0 0 180px;">
-      <div class="stat-label">Total vehículos</div>
-      <div class="stat-val" id="dashTotal" style="font-size:22px;margin-top:8px;font-weight:800">0</div>
-    </div>
-    <div class="stat" style="flex:0 0 180px;">
-      <div class="stat-label">Carros</div>
-      <div class="stat-val" id="dashCar" style="font-size:22px;margin-top:8px;font-weight:800">0</div>
-    </div>
-    <div class="stat" style="flex:0 0 180px;">
-      <div class="stat-label">Motos</div>
-      <div class="stat-val" id="dashMoto" style="font-size:22px;margin-top:8px;font-weight:800">0</div>
+    <!-- KPIs -->
+    <div class="kpis" role="list" aria-label="Indicadores">
+      <div class="stat" role="listitem">
+        <div class="stat-label">Total vehículos</div>
+        <div class="stat-val" id="dashTotal" aria-live="polite">0</div>
+      </div>
+      <div class="stat" role="listitem">
+        <div class="stat-label">Carros</div>
+        <div class="stat-val" id="dashCar" aria-live="polite">0</div>
+      </div>
+      <div class="stat" role="listitem">
+        <div class="stat-label">Motos</div>
+        <div class="stat-val" id="dashMoto" aria-live="polite">0</div>
+      </div>
     </div>
   </div>
 
   <!-- Lista (solo lectura) -->
-  <div style="margin-top:22px;">
+  <div class="vehicles-wrap">
     <h3 style="margin-bottom:12px">Lista de vehículos</h3>
 
-    <div id="dashVehicles" style="display:flex;flex-direction:column;gap:12px;">
-      <div id="dashPlaceholder" style="padding:18px;background:var(--card);border-radius:10px;color:var(--muted)">
+    <div id="dashVehicles">
+      <div id="dashPlaceholder" class="placeholder" style="padding:18px;background:var(--card);border-radius:10px;color:var(--muted)">
         Cargando vehículos...
       </div>
     </div>
@@ -64,7 +222,7 @@
   </div>
 </div>
 
-<!-- Modal: Detalles del tiquete (reutilizable) -->
+<!-- Ticket Modal -->
 <div id="ticketModal" style="display:none; position:fixed; inset:0; align-items:center; justify-content:center; z-index:120;">
   <div style="position:absolute; inset:0; background:rgba(0,0,0,0.45)"></div>
 
@@ -73,19 +231,17 @@
 
     <h3 id="ticketModalTitle" style="margin:0 0 8px">Detalle del tiquete</h3>
     <div id="ticketModalBody" style="max-height:60vh; overflow:auto; padding-top:8px;">
-      <!-- Aquí inyectamos contenido con JS -->
       <div style="padding:12px;color:var(--muted)">Cargando...</div>
     </div>
 
     <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
       <button id="ticketModalCloseBtn" class="btn-ghost">Cerrar</button>
-      <!-- Botón de acción futuro (checkout) — actualmente no hace nada -->
       <button id="ticketModalAction" class="btn-primary" style="display:none" data-tiquete-id="">Iniciar pago</button>
     </div>
   </div>
 </div>
 
-<!-- Modal personalizado: Mi Pasarela -->
+<!-- Mi Pasarela -->
 <div id="miPasarelaModal" style="display:none;position:fixed;inset:0;z-index:140;align-items:center;justify-content:center;">
   <div style="position:absolute;inset:0;background:rgba(0,0,0,0.45)"></div>
 

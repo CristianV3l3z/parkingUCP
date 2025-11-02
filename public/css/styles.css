@@ -536,3 +536,119 @@ h2 {
 .app-sidebar.collapsed { width:72px; }
 .app-sidebar.collapsed .sidebar-nav .nav-item { justify-content:center; padding:10px; }
 .app-sidebar.collapsed .sidebar-footer { display:none; }
+
+/* Ajuste fino visual para móvil */
+@media (max-width: 480px) {
+  /* Espaciado extra entre botones */
+  .vehicle-actions {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100%;
+  }
+
+  /* Botones uniformes */
+  .vehicle-actions button,
+  .vehicle-actions .btn,
+  .vehicle-actions .btn-ghost,
+  .vehicle-actions .btn-primary {
+    width: 100% !important;
+    padding: 14px 0 !important;
+    border-radius: 12px !important;
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+
+  /* Botón principal más llamativo */
+  .vehicle-actions .btn-primary {
+    background: linear-gradient(90deg,#ffb300,#ff9f00);
+    color: #111;
+    border: none;
+  }
+
+  /* Descripción con aire y buena lectura */
+  .vehicle-meta,
+  .vehicle-desc {
+    font-size: 15px;
+    line-height: 1.55;
+    margin-bottom: 8px;
+    color: #555;
+  }
+
+  /* Ajustar padding general de la tarjeta */
+  .vehicle-card {
+    padding: 14px;
+    gap: 10px;
+  }
+}
+
+/* FORZAR apilado y ancho de botones en móviles (último recurso: reglas muy específicas) */
+@media (max-width: 480px) {
+  /* Forzar que la parte inferior se apile */
+  .vehicle-card .vehicle-bottom,
+  .vehicle-bottom {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  /* Forzar contenedor de acciones en columna y 100% */
+  .vehicle-card .vehicle-actions,
+  .vehicle-actions,
+  #dashVehicles .vehicle-actions {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+    gap: 12px !important;
+    align-items: stretch !important;
+  }
+
+  /* Forzar a todos los botones dentro de vehicle-actions a 100% de ancho */
+  .vehicle-actions > * ,
+  .vehicle-actions button,
+  .vehicle-actions .btn,
+  .vehicle-actions .btn-action,
+  .vehicle-actions .btn-primary,
+  .vehicle-actions .btn-secondary,
+  .vehicle-actions .btn-ghost,
+  .vehicle-actions .btn-sm {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 14px 16px !important;
+    border-radius: 12px !important;
+    box-sizing: border-box !important;
+    font-weight: 700 !important;
+  }
+
+  /* Botón principal destacado */
+  .vehicle-actions .btn-primary,
+  .vehicle-actions .btn-action {
+    background: linear-gradient(90deg,#ffb300,#ff9f00) !important;
+    color: #111 !important;
+    border: none !important;
+    box-shadow: 0 6px 18px rgba(255,176,0,0.12) !important;
+  }
+
+  /* Mejor legibilidad de la descripción */
+  .vehicle-meta,
+  .vehicle-desc {
+    font-size: 15px !important;
+    line-height: 1.55 !important;
+    margin-bottom: 10px !important;
+    color: var(--muted) !important;
+  }
+
+  /* Ajuste padding general de la tarjeta */
+  .vehicle-card {
+    padding: 14px !important;
+    gap: 10px !important;
+  }
+
+  /* Evitar que algún flex en línea fuerce otra dirección */
+  [style*="flex-direction"] { /* no elimina, sólo previene que tenga prioridad visual en algunos navegadores */ }
+}
+
+
+

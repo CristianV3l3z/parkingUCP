@@ -8,6 +8,8 @@
   {{-- css principal --}}
   <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
 
+  
+
   {{-- estilos extras (puedes moverlos a styles.css) --}}
   <style>
     /* Variables basicas (ajusta en styles.css si quieres) */
@@ -27,15 +29,50 @@
     .icon-btn { background:transparent; border:none; padding:8px; border-radius:8px; cursor:pointer; position:relative; }
     .icon-badge { position:absolute; top:6px; right:6px; background:#ff3b30; color:#fff; font-size:11px; padding:2px 6px; border-radius:999px; }
     .avatar { width:36px; height:36px; border-radius:999px; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.06); cursor:pointer; font-weight:700 }
-    .dropdown { position:absolute; right:0; top:48px; width:220px; background:var(--card); border-radius:10px; box-shadow:var(--shadow); padding:8px; display:none; }
-    .dropdown.show { display:block; }
-    .dropdown a, .dropdown button { display:block; width:100%; text-align:left; padding:8px 10px; border-radius:8px; background:transparent; border:none; cursor:pointer; color:#111;}
-    .dropdown a:hover, .dropdown button:hover { background:rgba(0,0,0,0.03); }
+    
+    /* ----- AQUÍ ESTÁN LOS CAMBIOS ----- */
+    /* Usamos el ID #profileDropdown para evitar el conflicto con Bootstrap */
+    
+    #profileDropdown { 
+      position:absolute; 
+      right:0; 
+      top:48px; 
+      width:220px; 
+      background:var(--card); 
+      border-radius:10px; 
+      box-shadow:var(--shadow); 
+      padding:8px; 
+      display:none; 
+    }
+    
+    #profileDropdown.show { 
+      display:block; 
+    }
+    
+    #profileDropdown a, #profileDropdown button { 
+      display:block; 
+      width:100%; 
+      text-align:left; 
+      padding:8px 10px; 
+      border-radius:8px; 
+      background:transparent; 
+      border:none; 
+      cursor:pointer; 
+      color:#111;
+    }
+    
+    #profileDropdown a:hover, #profileDropdown button:hover { 
+      background:rgba(0,0,0,0.03); 
+    }
+    
+    /* ----- FIN DE LOS CAMBIOS ----- */
+
     .notif-list { max-height:300px; overflow:auto; }
+    
     /* boton en fila de vehiculo */
     .btn-action { background: linear-gradient(90deg,var(--accent), #ff9f00); color:#111; border-radius:8px; padding:8px 10px; border:none; cursor:pointer; font-weight:700; }
     .btn-ghost { background:transparent; border:1px solid rgba(0,0,0,0.06); padding:8px 12px; border-radius:8px; cursor:pointer; }
-  </style>
+</style>
   <!-- Bootstrap CSS (CDN) - opcional si ya usas Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -81,7 +118,6 @@
             </div>
 
             <a href="{{ route('usuario.edit') }}" id="editProfileBtn">Editar perfil</a>
-            <a href="{{ route('home') }}">Mi panel</a>
                 <form action="{{ route('logout') }}" method="POST" style="display:inline;">
                 @csrf
                 <button class="btn btn-primary" type="submit">Cerrar sesión</button>
@@ -147,6 +183,10 @@
         // más adelante abrirás un panel con notificaciones reales
       });
     });
+
+
+
+    
   </script>
 </body>
 </html>

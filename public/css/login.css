@@ -1,70 +1,67 @@
-/* login.css — tema claro estilo "parking" (adaptado de tu paleta) */
+/* login.css — tema claro "parking" (mejorado para móvil) */
 :root{
-  --bg:#f5f3f2;
-  --card:#ffffff;
-  --accent:#ffcc00; /* amarillo parking */
-  --accent-dark:#ddb300;
-  --muted:#8a8a8a;
-  --dark:#121212;
-  --radius:14px;
-
-  /* compatibilidad con tu markup original */
+  --bg: #f5f3f2;
+  --card: #ffffff;
+  --accent: #ffcc00;
+  --accent-dark: #ddb300;
+  --muted: #6f6f6f;
+  --dark: #121212;
+  --radius: 14px;
   --card-bg: rgba(255,255,255,0.98);
   --input-bg: rgba(18,18,18,0.03);
   --white: #fff;
+  --max-width: 1100px;
+  --space: 20px;
+  --shadow: 0 12px 30px rgba(18,18,18,0.06);
 }
 
-/* Reset básico */
+/* reset ligero */
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
   margin:0;
-  font-family:"Segoe UI", Roboto, Arial, sans-serif;
-  background: linear-gradient(90deg, #f9f8f7, #f5f3f2 40%, #f2efe9 100%);
+  font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+  background: linear-gradient(90deg, #f9f8f7 0%, #f5f3f2 50%, #f2efe9 100%);
   color:var(--dark);
   -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
 }
 
-/* Grid principal: imagen (izq) | formulario (der) */
+/* contenedor principal */
 .page{
   min-height:100vh;
   display:grid;
-  grid-template-columns:1fr 420px;
-  gap:40px;
+  grid-template-columns: 1fr 420px;
+  gap:32px;
   align-items:center;
-  padding:40px;
-  width: min(1200px, 94%);
+  padding:48px;
+  width: min(var(--max-width), 94%);
   margin: 0 auto;
 }
 
-/* Visual: contenedor de imágenes */
+/* VISUAL: imágenes decorativas */
 .visual{
   position:relative;
   border-radius:var(--radius);
   overflow:hidden;
   min-height:560px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.06);
-  background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(249,247,246,0.85));
+  box-shadow: var(--shadow);
+  background: linear-gradient(180deg, rgba(255,255,255,0.86), rgba(249,247,246,0.86));
 }
 
-/* Mitades absolutas para no alterar layout */
-.visual-left,.visual-right{
-  position:absolute;
-  top:0; bottom:0;
+/* dos mitades que actúan como fondos */
+.visual-left, .visual-right {
+  position:absolute; top:0; bottom:0;
   width:50%;
   background-size:cover;
   background-position:center;
   filter:contrast(0.98) saturate(1.02);
-  overflow:hidden;
 }
+.visual-left { left:0; background-color:#efefef; }
+.visual-right { right:0; background-color:#f6f3eb; }
 
-/* Colores base en caso de que no uses <img> */
-.visual-left{ left:0; background-color:#efefef; }
-.visual-right{ right:0; background-color:#f6f3eb; }
-
-/* Si hay <img> dentro, los tratamos como fondo */
-.visual-left img,
-.visual-right img{
+/* forzar que imagen cubra el área */
+.visual-left img, .visual-right img{
   position:absolute;
   inset:0;
   width:100%;
@@ -73,158 +70,123 @@ body{
   display:block;
 }
 
-/* Card / formulario (tema claro) */
-.auth{
+/* overlay sutil y branding */
+.visual-overlay{
+  position:absolute;
+  inset:0;
   display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:12px;
+  align-items:flex-end;
+  padding:24px;
+  pointer-events:none;
 }
+.brand{ display:flex; gap:12px; align-items:center; background: rgba(255,255,255,0.6); border-radius:12px; padding:8px 12px; pointer-events:auto; }
+.brand-logo{ width:44px; height:44px; object-fit:contain; border-radius:8px; }
+
+/* CARD (formulario) */
+.auth{ display:flex; justify-content:center; align-items:center; }
 .card{
   width:100%;
   max-width:420px;
   background:var(--card-bg);
-  border-radius:12px;
+  border-radius:14px;
   padding:32px;
-  box-shadow:0 12px 30px rgba(18,18,18,0.06);
+  box-shadow: var(--shadow);
   border: 1px solid rgba(0,0,0,0.04);
+  transition: transform .12s ease, box-shadow .12s ease;
 }
+.card:focus-within{ transform: translateY(-2px); box-shadow: 0 18px 40px rgba(18,18,18,0.08); }
 
-/* Titulos */
-.card h1{ margin:0 0 6px 0; font-size:28px; letter-spacing:0.2px; font-family:"Playfair Display", serif; color:var(--dark) }
-.subtitle{ margin:0 0 18px 0; color:var(--muted); font-size:13px; }
+/* tipografías */
+.card h1{ margin:0 0 6px 0; font-size:26px; letter-spacing:0.2px; color:var(--dark); font-weight:700; }
+.subtitle{ margin:0 0 18px 0; color:var(--muted); font-size:14px; }
 
-/* Mensajes */
-.alert{
-  background:#fff6f0;
-  border:1px solid rgba(255,80,80,0.12);
-  color:#7a2121;
-  padding:10px 12px;
-  border-radius:8px;
-  margin-bottom:12px;
-  font-size:13px;
-}
-.status{
-  background:#f7fff0;
-  border:1px solid rgba(0,180,120,0.12);
-  color:#1e3920;
-  padding:10px 12px;
-  border-radius:8px;
-  margin-bottom:12px;
-  font-size:13px;
-}
+/* mensajes */
+.alert{ background:#fff6f0; border:1px solid rgba(255,80,80,0.12); color:#7a2121; padding:10px 12px; border-radius:8px; margin-bottom:12px; font-size:13px; }
+.status{ background:#f7fff0; border:1px solid rgba(0,180,120,0.12); color:#1e3920; padding:10px 12px; border-radius:8px; margin-bottom:12px; font-size:13px; }
 
-/* Inputs y grupos */
-.input-group{ display:block; margin-bottom:12px; font-size:13px; }
-.label-text{ display:block; margin-bottom:6px; color:var(--muted); font-weight:600; font-size:12px; }
-
+/* inputs */
+.input-group{ display:block; margin-bottom:14px; font-size:14px; }
+.label-text{ display:block; margin-bottom:8px; color:var(--muted); font-weight:600; font-size:13px; }
 input[type="email"], input[type="password"]{
   width:100%;
-  padding:12px 14px;
+  padding:14px 14px;
   border-radius:10px;
   border:1px solid rgba(0,0,0,0.06);
   background:var(--input-bg);
   color:var(--dark);
   outline:none;
-  transition:box-shadow .18s, border-color .18s, transform .08s;
+  transition: box-shadow .16s, border-color .16s, transform .06s;
   font-size:15px;
 }
-input::placeholder{ color:#b6b6b6; }
+input::placeholder{ color:#b6b6b6; opacity:0.95; }
 input:focus{
-  box-shadow:0 8px 20px rgba(221,179,0,0.12);
+  box-shadow:0 12px 28px rgba(221,179,0,0.12);
   border-color: rgba(221,179,0,0.25);
   transform: translateY(-1px);
 }
 
-/* Helpers layout */
-.row-between{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+/* helpers layout */
+.row-between{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:12px; }
 .checkbox{ display:flex; align-items:center; gap:8px; color:var(--muted); font-size:13px; }
-.checkbox input{ width:16px; height:16px; accent-color:var(--accent); }
+.checkbox input{ width:18px; height:18px; accent-color:var(--accent); }
 
-/* Links */
+/* links */
 .forgot{ color:var(--muted); font-size:13px; text-decoration:none; }
 .forgot:hover{ text-decoration:underline; color:var(--dark); }
 
-/* Botón primario */
+/* botón */
 .primary-btn{
   width:100%;
-  padding:12px 14px;
+  padding:14px 16px;
   border:none;
   border-radius:10px;
-  background:linear-gradient(180deg,var(--accent),var(--accent-dark));
+  background: linear-gradient(180deg,var(--accent),var(--accent-dark));
   color:var(--dark);
-  font-weight:700;
+  font-weight:800;
   font-size:16px;
   cursor:pointer;
-  box-shadow:0 8px 20px rgba(255,204,0,0.12);
-  transition:transform .12s ease, box-shadow .12s ease;
+  box-shadow:0 12px 30px rgba(255,204,0,0.12);
+  transition: transform .12s ease, box-shadow .12s ease;
 }
-.primary-btn:active{ transform:translateY(1px); }
-.primary-btn:hover{ box-shadow:0 12px 30px rgba(255,204,0,0.16); }
+.primary-btn:active{ transform: translateY(1px); }
+.primary-btn:hover{ box-shadow:0 18px 40px rgba(255,204,0,0.16); }
 
-/* Texto pequeño */
-.small{ margin-top:14px; font-size:13px; color:var(--muted); }
-.small a{ color:var(--accent); text-decoration:none; font-weight:600; }
+/* texto pequeño */
+.small{ margin-top:16px; font-size:13px; color:var(--muted); text-align:center; }
+.small a{ color:var(--accent); text-decoration:none; font-weight:700; }
 .small a:hover{ text-decoration:underline; }
 
-/* Inputs con error */
-input[aria-invalid="true"]{
-  border-color: rgba(255,80,80,0.18);
-  box-shadow:0 6px 18px rgba(255,80,80,0.06);
-}
+/* error visual */
+input[aria-invalid="true"]{ border-color: rgba(255,80,80,0.18); box-shadow:0 6px 18px rgba(255,80,80,0.06); }
 
-/* Responsive */
-@media (max-width:980px){
-  .page{ grid-template-columns:1fr; padding:24px; gap:20px; }
+/* responsive */
+@media (max-width: 980px){
+  .page{ grid-template-columns: 1fr; padding:20px; gap:20px; width:94%; }
   .visual{ min-height:300px; order:2; border-radius:12px; }
-  .auth{ order:1; }
-  /* convertir mitades absolutas a bloques apilados en mobile */
-  .visual-left, .visual-right{
-    width:100%;
-    position:relative;
-    height:50%;
-  }
-  .visual-right{ top:0; transform:none; }
-  .visual-left img, .visual-right img{
-    position:relative;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-  }
+  .auth{ order:1; padding:8px; }
+  .visual-left, .visual-right{ width:100%; position:relative; height:100%; }
+  .visual-left img, .visual-right img{ position:relative; height:100%; object-fit:cover; }
+  .visual-overlay{ align-items:flex-start; padding:12px; }
+  .brand{ padding:8px; }
+  .card{ padding:20px; border-radius:12px; max-width:100%; box-shadow: 0 8px 22px rgba(18,18,18,0.04); }
+  .card h1{ font-size:22px; }
+  .row-between{ flex-direction:row; gap:8px; justify-content:space-between; }
+  .input-group{ margin-bottom:12px; }
+  input[type="email"], input[type="password"], .primary-btn { padding:12px; font-size:15px; min-height:44px; }
 }
 
-/* Pantallas grandes */
-@media (min-width:1200px){
-  .page{ padding:56px; gap:48px; }
-  .visual{ min-height:640px; }
+/* pantallas muy pequeñas */
+@media (max-width:420px){
+  :root{ --space:14px; }
+  .page{ padding:16px; gap:14px; }
+  .visual{ min-height:220px; }
+  .card{ padding:16px; border-radius:10px; }
+  .brand-text small{ display:block; font-size:11px; color:var(--muted); }
+  .small{ font-size:13px; }
 }
 
-/* Ajustes opcionales: fuerza que los <img> se comporten como fondo (evita desplazar grid) */
-.visual-left img,
-.visual-right img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.visual-left,
-.visual-right { overflow: hidden; }
+/* accesibilidad: foco visible */
+input:focus, .primary-btn:focus { outline: 3px solid rgba(221,179,0,0.12); outline-offset:2px; }
 
-/* Suaviza el reflow al reducir pantalla */
-@media (max-width:980px) {
-  .visual { min-height:320px; }
-  .page { padding:20px; gap:18px; }
-}
-
-/* Overlay sutil para mejorar contraste en imágenes */
-.visual::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background: linear-gradient(180deg, rgba(255,255,255,0.0) 0%, rgba(18,18,18,0.02) 60%);
-  pointer-events:none;
-}
-
-/* Fin de login.css */
+/* evita overflow horizontal */
+html,body { overflow-x:hidden; }
