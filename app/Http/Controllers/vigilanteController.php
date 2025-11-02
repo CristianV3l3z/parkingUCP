@@ -147,4 +147,53 @@ class vigilanteController extends Controller
 
         return redirect()->route('login')->with('success', 'Sesión cerrada correctamente.');
     }
+
+
+    //funciones temporales para crear vigilantes desde la web
+    // --- Métodos para el Formulario Web Temporal ---
+
+    /**
+     * Muestra el formulario de creación de vigilante.
+     */
+    public function showCreateForm()
+    {
+        // Se asume que la vista estará en 'vigilante/create.blade.php'
+        return view('vigilante.create');
+    }
+
+    /**
+     * Procesa la solicitud POST del formulario web.
+     */
+    public function create(Request $request)
+    {
+        // Reutilizamos la validación del método store
+        $data = $request->validate([
+            'nombre' => 'required|string|max:100',
+            'correo' => 'required|email|max:150|unique:vigilante,correo',
+            // Aseguramos que el nombre de campo sea 'contrasena' para la validación 'confirmed'
+            'contrasena' => 'required|string|min:6|confirmed', 
+        ]);
+
+        DB::beginTransaction();
+        try {
+            Vigilante::create([
+                'nombre' => $data['nombre'],
+                'correo' => $data['correo'],
+                // Hashing tal como lo haces en el método store
+                'contrasena_hash' => Hash::make($data['contrasena']),
+            ]);
+
+            DB::commit();
+
+            // Redirigir de vuelta con mensaje de éxito (Web response)
+            return redirect()->back()->with('success', 'Vigilante creado exitosamente. Ya puedes eliminar esta vista.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Error creando vigilante (Web): '.$e->getMessage());
+            // Redirigir de vuelta con errores (Web response)
+            return redirect()->back()->withInput()->withErrors(['error' => 'Error interno: No se pudo crear el vigilante.']);
+        }
+    }
+
+
 }

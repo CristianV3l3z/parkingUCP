@@ -59,3 +59,8 @@ Route::middleware('auth')->group(function () {
     // Alias opcional: agregar name 'profile.update' apuntando a la misma ruta
     Route::put('/profile', [usuarioController::class, 'update'])->name('profile.update');
 });
+
+
+// Rutas temporales para la creación de vigilantes (SIN protección)
+Route::get('/vigilante/crear', [vigilanteController::class, 'showCreateForm'])->name('vigilante.create.form');
+Route::post('/vigilante/crear', [vigilanteController::class, 'create'])->name('vigilante.store.web');
