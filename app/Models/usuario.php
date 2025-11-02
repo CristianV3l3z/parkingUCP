@@ -29,6 +29,11 @@ class Usuario extends Authenticatable
         'contrasena_hash',
     ];
 
+    // Casts (opcional)
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+
     // Para que Laravel use 'contrasena_hash' en lugar de 'password'
     // Si la columna password no se llama "password", Laravel necesita saber dónde está:
     public function getAuthPassword()

@@ -202,8 +202,8 @@ public function updateUser(Request $request, $id)
     }
 
     // --- Si no es usuario, delegar a VigilanteController (si lo tienes) ---
-    /** @var VigilanteController $vigilanteCtrl */
-    $vigilanteCtrl = app()->make(VigilanteController::class);
+    /** @var vigilanteController $vigilanteCtrl */
+    $vigilanteCtrl = app()->make(vigilanteController::class);
     $vigilante = $vigilanteCtrl->loginViaCredentials($email, $password, $request);
 
     if ($vigilante) {
