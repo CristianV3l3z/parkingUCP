@@ -17,6 +17,12 @@ class registroController extends Controller
     // Métodos originales (no tocados)
     // -----------------------------
 
+    //Mostrar la vista de registro
+    public function showRegistro()
+    {
+        return view('registro');
+    }
+
     // Listar registros
     public function index()
     {
