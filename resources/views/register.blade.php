@@ -4,7 +4,11 @@
 
   @vite([
     'resources/css/register.css',
+    'resources/js/app.js',
+    'resources/js/login.js',
     'resources/js/register.js',
+    'resources/js/dashboard_vehiculos.js',
+    'resources/js/dashboard_readonly.js'
   ])
 
 <div class="page"><!-- grid: visual (izq) | auth (der) -->
