@@ -1,36 +1,35 @@
-// public/js/register.js
+// resources/js/register.js
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('registerForm');
+  if (!form) return;
+
   const btn = form.querySelector('button[type="submit"]');
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // Deshabilitar botón para evitar envíos múltiples
     btn.disabled = true;
     btn.textContent = 'Registrando...';
 
-    // Construir FormData
     const fd = new FormData(form);
 
     try {
-      // Enviar con fetch (si prefieres submit normal, comentar este bloque y usar form.submit())
-      const response = await fetch(form.action, {
+      // 🚀 Forzar uso de HTTPS o dominio actual
+      const targetUrl = new URL(form.getAttribute('action'), window.location.origin).href;
+
+      const response = await fetch(targetUrl, {
         method: 'POST',
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
-          'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+          'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
         },
         body: fd,
       });
 
-      // Si el controlador devuelve JSON con errores
       if (!response.ok) {
-        // Si es JSON con errores -> mostrar mensajes
         const contentType = response.headers.get('content-type') || '';
         if (contentType.includes('application/json')) {
           const data = await response.json();
-          // Si vienen errores de validación (Laravel)
           if (data.errors) {
             alert(Object.values(data.errors).flat().join('\n'));
           } else if (data.message) {
@@ -39,7 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Error al registrar. Intenta de nuevo.');
           }
         } else {
-          // Fallback: recargar para que aparezcan errores en blade
           window.location.reload();
         }
         btn.disabled = false;
@@ -47,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // Si ok: si devuelve JSON con redirect, seguirlo; si es redirect real, fetch seguirá pero no redirige
       const contentType = response.headers.get('content-type') || '';
       if (contentType.includes('application/json')) {
         const data = await response.json();
@@ -55,11 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
           window.location.href = data.redirect;
           return;
         }
-        // Si nos devuelven usuario:
         alert('Registro exitoso');
         window.location.href = '/dashboard';
       } else {
-        // si el controller responde con un redirect tradicional, forzamos la navegación
         window.location.href = '/dashboard';
       }
     } catch (err) {
