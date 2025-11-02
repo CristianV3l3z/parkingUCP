@@ -1,0 +1,221 @@
+/* register.css — tema claro estilo "parking" */
+/* Variables (paleta que compartiste) */
+:root{
+  --bg:#f5f3f2;
+  --card:#ffffff;
+  --accent:#ffcc00; /* amarillo parking */
+  --accent-dark:#ddb300;
+  --muted:#8a8a8a;
+  --dark:#121212;
+  --radius:14px;
+
+  /* ajustes locales para layout */
+  --card-bg: rgba(255,255,255,0.98);
+  --input-bg: rgba(18,18,18,0.03);
+}
+
+/* Reset básico */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background:var(--bg);
+  color:var(--dark);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Grid principal: imagen (izq) | formulario (der) */
+.page{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns: 1fr 420px;
+  gap:40px;
+  align-items:center;
+  padding:40px;
+  width: min(1200px, 94%);
+  margin: 0 auto;
+}
+
+/* Visual: contenedor de imágenes (actúa tipo "hero" parcial) */
+.visual{
+  position:relative;
+  border-radius:var(--radius);
+  overflow:hidden;
+  min-height:560px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.06);
+  background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(249,247,246,0.6));
+}
+
+/* Dos mitades visuales — se mantienen como capas absolutas */
+.visual-left,
+.visual-right{
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:50%;
+  background-size:cover;
+  background-position:center;
+  filter:contrast(0.98) saturate(1.02);
+  overflow:hidden;
+}
+
+/* Si usas background images por CSS (opcional) */
+.visual-left{ left:0; background-color:#eee; }
+.visual-right{ right:0; background-color:#f2efe9; }
+
+/* Si el markup contiene <img> dentro, forzamos comportamiento de fondo */
+.visual-left img,
+.visual-right img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+/* Card / formulario (tema claro) */
+.auth{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:12px;
+}
+.card{
+  width:100%;
+  max-width:420px;
+  background:var(--card-bg);
+  border-radius:12px;
+  padding:32px;
+  box-shadow:0 12px 30px rgba(18,18,18,0.06);
+  border: 1px solid rgba(0,0,0,0.04);
+}
+
+/* Titulos */
+.card h1{ margin:0 0 6px 0; font-size:28px; letter-spacing:0.2px; font-family:"Playfair Display", serif; color:var(--dark) }
+.subtitle{ margin:0 0 18px 0; color:var(--muted); font-size:13px; }
+
+/* Mensajes flash/errores */
+.alert{
+  background:#fff6f0;
+  border:1px solid rgba(255,80,80,0.12);
+  color:#7a2121;
+  padding:10px 12px;
+  border-radius:8px;
+  margin-bottom:12px;
+  font-size:13px;
+}
+.status{
+  background:#f7fff0;
+  border:1px solid rgba(0,180,120,0.12);
+  color:#1e3920;
+  padding:10px 12px;
+  border-radius:8px;
+  margin-bottom:12px;
+  font-size:13px;
+}
+
+/* Inputs y grupos */
+.input-group{ display:block; margin-bottom:12px; font-size:13px; }
+.label-text{ display:block; margin-bottom:6px; color:var(--muted); font-weight:600; font-size:12px; }
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="password"]{
+  width:100%;
+  padding:12px 14px;
+  border-radius:10px;
+  border:1px solid rgba(0,0,0,0.06);
+  background:var(--input-bg);
+  color:var(--dark);
+  outline:none;
+  transition: box-shadow .18s, border-color .18s, transform .08s;
+  font-size:15px;
+}
+input::placeholder{ color: #b6b6b6; }
+input:focus{
+  box-shadow:0 8px 20px rgba(221,179,0,0.12);
+  border-color: rgba(221,179,0,0.25);
+  transform: translateY(-1px);
+}
+
+/* Helpers layout del form */
+.row-between{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.checkbox{ display:flex; align-items:center; gap:8px; color:var(--muted); font-size:13px; }
+.checkbox input{ width:16px; height:16px; accent-color:var(--accent); }
+
+/* Botones */
+.primary-btn{
+  width:100%;
+  padding:12px 14px;
+  border:none;
+  border-radius:10px;
+  background: linear-gradient(180deg, var(--accent), var(--accent-dark));
+  color:var(--dark);
+  font-weight:700;
+  font-size:16px;
+  cursor:pointer;
+  box-shadow:0 10px 30px rgba(255,204,0,0.12);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.primary-btn:active{ transform: translateY(1px); }
+.primary-btn:hover{ box-shadow:0 14px 40px rgba(255,204,0,0.16); }
+
+/* Links y texto pequeño */
+.small{ margin-top:14px; font-size:13px; color:var(--muted); }
+.small a{ color:var(--accent); text-decoration:none; font-weight:600; }
+.small a:hover{ text-decoration:underline; }
+
+/* Pequeños bordes redondeados y sombras para inputs cuando hay error */
+input[aria-invalid="true"]{
+  border-color: rgba(255,80,80,0.18);
+  box-shadow: 0 6px 18px rgba(255,80,80,0.06);
+}
+
+/* ===== Responsive ===== */
+@media (max-width:980px){
+  .page{ grid-template-columns:1fr; padding:24px; gap:20px; width:94%; }
+  .visual{ min-height:300px; order:2; border-radius:12px; }
+  .auth{ order:1; }
+  /* cuando hay <img> dentro de visual, las mitades se convierten en bloques apilados */
+  .visual-left, .visual-right{
+    width:100%;
+    position:relative;
+    height:50%;
+    position:relative; /* override absolute para móviles */
+  }
+  .visual-left img, .visual-right img{
+    position:relative;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+}
+
+/* Ajustes para pantallas muy grandes */
+@media (min-width: 1200px){
+  .page{ padding:56px; gap:48px; }
+  .visual{ min-height:640px; }
+}
+
+/* ===== Opcionales: overlay suave para mejorar contraste de las imágenes ===== */
+.visual::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.0) 0%, rgba(18,18,18,0.03) 60%);
+  pointer-events:none;
+}
+
+/* ===== Paneles y scroll-snap (si decides usar secciones full-screen) ===== */
+/* Conservadas por si reutilizas. No interfieren con el register simple */
+:root{ --header-height: 80px; --gap-section: 0px; }
+.main-scroll{ height:100vh; overflow-y:auto; scroll-behavior:smooth; scroll-snap-type:y mandatory; -webkit-overflow-scrolling:touch; }
+.panel{ scroll-snap-align:start; min-height:calc(100vh - var(--header-height)); padding-top:calc(var(--header-height) + 28px); padding-bottom:40px; display:flex; align-items:center; gap:var(--gap-section); box-sizing:border-box; position:relative; background-repeat:no-repeat; background-size:cover; background-position:center; }
+@media (max-width:900px){
+  .panel{ padding-top:calc(var(--header-height) + 18px); padding-bottom:28px; }
+}
+
+/* Fin de register.css */

@@ -7,7 +7,7 @@
   <title>Parking — Dashboard</title>
 
   <!-- CSS desde public/ -->
-  @vite(['resources/css/styles.css', 'resources/js/app.js'])
+  @vite(['resources/css/styles.css', 'resources/js/register.js'])
 
 
 </head>
