@@ -1,7 +1,14 @@
 @extends('layout-login-register')
 @section('content')
 
-<link rel="stylesheet" href="{{ asset('css/login.css') }}">
+  @vite([
+    'resources/css/app.css',
+    'resources/css/styles.css',
+    'resources/js/app.js',
+    'resources/js/login.js',
+    'resources/js/register.js',
+    'resources/js/dashboard_vehiculos.js'
+  ])
 
 <div class="page"><!-- <- contenedor GRID: visual (izq) | auth (der) -->
   <!-- visual -->

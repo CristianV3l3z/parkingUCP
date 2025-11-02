@@ -2,7 +2,14 @@
 @extends('layout-vigilante')
 
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/styles.css') }}">
+  @vite([
+    'resources/css/app.css',
+    'resources/css/styles.css',
+    'resources/js/app.js',
+    'resources/js/login.js',
+    'resources/js/register.js',
+    'resources/js/dashboard_vehiculos.js'
+  ])
 
 <div class="app-shell" style="min-height:100vh;display:flex;background:var(--bg)">
   @if(session('vigilante') || (auth()->check() && (auth()->user()->is_vigilante ?? false)))
@@ -108,6 +115,5 @@
   window.__CURRENT_USER_ID = "{{ auth()->id() ?? session('vigilante.id_usuario') ?? '' }}";
 </script>
 
-<script src="{{ asset('js/app.js') }}"></script>
-<script src="{{ asset('js/datos.js') }}"></script>
+
 @endsection

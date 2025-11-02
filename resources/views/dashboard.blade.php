@@ -2,7 +2,15 @@
 @extends('layout')
 
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/style.css') }}">
+  @vite([
+    'resources/css/app.css',
+    'resources/css/styles.css',
+    'resources/js/app.js',
+    'resources/js/login.js',
+    'resources/js/register.js',
+    'resources/js/dashboard_vehiculos.js',
+    'resources/js/dashboard_readonly.js'
+  ])
 
 
 
@@ -275,6 +283,4 @@
 </div>
 
 
-
-<script src="{{ asset('js/dashboard_readonly.js') }}"></script>
 @endsection

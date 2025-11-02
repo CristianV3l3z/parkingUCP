@@ -2,7 +2,14 @@
 @extends('layout-vigilante')
 
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/style.css') }}">
+  @vite([
+    'resources/css/app.css',
+    'resources/css/styles.css',
+    'resources/js/app.js',
+    'resources/js/login.js',
+    'resources/js/register.js',
+    'resources/js/dashboard_vehiculos.js'
+  ])
 
 <!-- ====== Layout: sidebar + contenido (mismo estilo que ingresos) ====== -->
 <div class="app-shell" style="min-height:100vh;display:flex;background:var(--bg)">
