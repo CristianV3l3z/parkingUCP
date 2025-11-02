@@ -73,5 +73,6 @@
 </script>
 
 <!-- Incluye el script (ver más abajo) -->
-<script src="{{ asset('js/tarifas.js') }}"></script>
+@vite('resources/js/tarifas.js')
+
 @endsection
