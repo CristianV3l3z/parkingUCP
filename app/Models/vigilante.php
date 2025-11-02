@@ -26,6 +26,7 @@ class vigilante extends Model
         'nombre',
         'correo',
         'contrasena_hash',
+        'estado',
     ];
 
     // Laravel ya gestiona created_at y updated_at
