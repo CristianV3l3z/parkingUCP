@@ -61,6 +61,3 @@ Route::middleware('auth')->group(function () {
 });
 
 
-// Rutas temporales para la creación de vigilantes (SIN protección)
-Route::get('/vigilante/crear', [vigilanteController::class, 'showCreateForm'])->name('vigilante.create.form');
-Route::post('/vigilante/crear', [vigilanteController::class, 'create'])->name('vigilante.store.web');
