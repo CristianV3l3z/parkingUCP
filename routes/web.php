@@ -7,7 +7,6 @@ use App\Http\Controllers\vigilanteController;
 use App\Http\Controllers\datosController;
 use App\Http\Controllers\tiqueteController;
 use App\Http\Controllers\pagoController;
-use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,7 +28,7 @@ Route::post('/login', [usuarioController::class, 'login'])->name('login.post');
 Route::post('/logout', [usuarioController::class, 'logout'])->name('logout');
 
 Route::get('/register', [registroController::class, 'showRegisterForm'])->name('register.form');
-Route::post('/register', [registroController::class, 'register'])->name('usuario.register');
+Route::post('/register', [registroController::class, 'register'])->name('register');
 
 // Dashboard protegido por auth
 Route::get('/dashboard', fn() => view('dashboard'))->middleware('auth')->name('dashboard');
@@ -60,12 +59,3 @@ Route::middleware('auth')->group(function () {
     // Alias opcional: agregar name 'profile.update' apuntando a la misma ruta
     Route::put('/profile', [usuarioController::class, 'update'])->name('profile.update');
 });
-
-Route::get('/clear', function() {
-    Artisan::call('config:clear');
-    Artisan::call('cache:clear');
-    Artisan::call('view:clear');
-    return 'Caches cleared!';
-});
-
-
