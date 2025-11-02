@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL; // 👈 AGREGA ESTA LÍNEA
 
 class AppServiceProvider extends ServiceProvider
 {
