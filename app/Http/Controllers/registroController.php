@@ -68,7 +68,7 @@ class registroController extends Controller
     }
 
     // -----------------------------
-    // Métodos nuevos: Registro de usuarios (Register)
+    // Métodos nuevos: Registro de s (Register)
     // -----------------------------
 
     /**
@@ -106,7 +106,7 @@ class registroController extends Controller
         // Reglas: validar 'correo' porque así está tu BD
         $validator = Validator::make($payload, [
             'nombre' => 'required|string|max:100',
-            'correo' => 'required|email|max:150|unique:usuario,correo',
+            'correo' => 'required|email|max:150|unique:,correo',
             'telefono' => 'nullable|string|max:30',
             'password' => 'required|string|min:8|confirmed',
         ]);

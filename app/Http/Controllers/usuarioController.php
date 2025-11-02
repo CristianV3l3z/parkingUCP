@@ -18,7 +18,7 @@ class usuarioController extends Controller
       // Obtener todos los usuarios
     public function index()
     {
-        return response()->json(usuario::all());
+        return response()->json(Usuario::all());
     }
 
     // Obtener un solo usuario por ID
@@ -240,7 +240,7 @@ public function edit()
     // Si por alguna razón auth()->user() no retorna el modelo, intenta buscar por id_usuario
     if (! $user || ! is_object($user)) {
         $authId = auth()->id();
-        $user = usuario::where('id_usuario', $authId)->first();
+        $user = Usuario::where('id_usuario', $authId)->first();
     }
 
     if (! $user) {
@@ -259,7 +259,7 @@ public function update(Request $request)
     $user = auth()->user();
     if (! $user || ! is_object($user)) {
         $authId = auth()->id();
-        $user = usuario::where('id_usuario', $authId)->first();
+        $user = Usuario::where('id_usuario', $authId)->first();
     }
 
     if (! $user) {
