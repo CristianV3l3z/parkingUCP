@@ -158,7 +158,7 @@ class vigilanteController extends Controller
     public function showCreateForm()
     {
         // Se asume que la vista estará en 'vigilante/create.blade.php'
-        return view('vigilante.create');
+        return view('create');
     }
 
     /**
