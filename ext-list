@@ -1,1 +1,9 @@
-pdo_mysql
+pdo_pgsql
+pgsql
+mbstring
+openssl
+tokenizer
+xml
+ctype
+json
+bcmath
