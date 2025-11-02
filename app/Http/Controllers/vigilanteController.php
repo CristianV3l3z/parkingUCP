@@ -195,6 +195,25 @@ class vigilanteController extends Controller
             return redirect()->back()->withInput()->withErrors(['error' => 'Error interno: No se pudo crear el vigilante.']);
         }
     }
+public function loginViaCredentials($email, $password, $request)
+{
+    $vigilante = vigilante::where('correo', $email)->first();
+
+    if ($vigilante && Hash::check($password, $vigilante->contrasena_hash)) {
+        // Guardar en sesión igual que en login()
+        $request->session()->put('vigilante_id', $vigilante->id_vigilante);
+        $request->session()->put('vigilante', [
+            'id' => $vigilante->id_vigilante,
+            'nombre' => $vigilante->nombre,
+            'correo' => $vigilante->correo,
+        ]);
+        $request->session()->put('user_type', 'vigilante');
+
+        return $vigilante;
+    }
+
+    return null;
+}
 
 
 }
