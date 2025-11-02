@@ -28,8 +28,8 @@ Route::get('/login', [usuarioController::class, 'showLoginForm'])->name('login')
 Route::post('/login', [usuarioController::class, 'login'])->name('login.post');
 Route::post('/logout', [usuarioController::class, 'logout'])->name('logout');
 
-Route::get('/register', [registroController::class, 'showRegisterForm'])->name('register.form');
-Route::post('/register', [registroController::class, 'register'])->name('usuario.register');
+Route::get('/register', [usuarioController::class, 'showRegisterForm'])->name('register.form');
+Route::post('/register', [usuarioController::class, 'register'])->name('usuario.register');
 
 // Dashboard protegido por auth
 Route::get('/dashboard', fn() => view('dashboard'))->middleware('auth')->name('dashboard');
