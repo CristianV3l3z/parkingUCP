@@ -3,12 +3,8 @@
 @section('content')
 
   @vite([
-    'resources/css/app.css',
-    'resources/css/styles.css',
-    'resources/js/app.js',
-    'resources/js/login.js',
+    'resources/css/register.css',
     'resources/js/register.js',
-    'resources/js/dashboard_vehiculos.js'
   ])
 
 <div class="page"><!-- grid: visual (izq) | auth (der) -->
