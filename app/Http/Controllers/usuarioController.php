@@ -129,22 +129,32 @@ class usuarioController extends Controller
      */
     public function register(Request $request)
     {
-        // Validación en servidor
+        // 1. Validación de campos (excluyendo la unicidad problemática)
         $validated = $request->validate([
             'nombre' => 'required|string|max:100',
-            // CORREGIDO: Usando la sintaxis de pipe '|' que es más sencilla y robusta
-            'correo' => 'required|email|max:150|unique:usuario,correo', 
+            // **IMPORTANTE**: QUITAMOS Rule::unique() para hacer la comprobación manualmente.
+            'correo' => 'required|email|max:150', 
             'telefono' => 'nullable|string|max:30',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        // Crear usuario en la tabla 'usuario'
+        // 2. **COMPROBACIÓN MANUAL DE UNICIDAD**
+        $email = $validated['correo'];
+        $existingUser = Usuario::where('correo', $email)->first();
+
+        if ($existingUser) {
+            // Si el correo ya existe, redirigimos con un error
+            return back()->withErrors([
+                'correo' => 'El correo electrónico ya está registrado.'
+            ])->withInput();
+        }
+
+        // 3. Crear usuario en la tabla 'usuario'
         $usuario = Usuario::create([
             'nombre' => $validated['nombre'],
-            // Usar $validated['correo'] que es el nombre correcto de la clave
-            'correo' => $validated['correo'], 
+            'correo' => $email, 
             'telefono' => $validated['telefono'] ?? null,
-            'contrasena_hash' => Hash::make($validated['password']),
+            'contrasena_hash' => Hash::make($validated['password']), 
         ]);
 
         // La lógica para redireccionar o iniciar sesión iría aquí (si no la tienes, te sugiero añadirla)
