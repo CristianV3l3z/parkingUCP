@@ -2,14 +2,7 @@
 
 @section('content')
 
-  @vite([
-    'resources/css/register.css',
-    'resources/js/app.js',
-    'resources/js/login.js',
-    'resources/js/register.js',
-    'resources/js/dashboard_vehiculos.js',
-    'resources/js/dashboard_readonly.js'
-  ])
+<link rel="stylesheet" href="{{ asset('css/register.css') }}">
 
 <div class="page"><!-- grid: visual (izq) | auth (der) -->
   <!-- visual -->
@@ -43,7 +36,7 @@
         <div class="status">{{ session('status') }}</div>
       @endif
 
-      <form id="registerForm" action="{{ route('usuario.register') }}" method="POST" novalidate>
+      <form id="registerForm" action="{{ route('register') }}" method="POST" novalidate>
         @csrf
 
         <label class="input-group" for="nombre">
@@ -53,7 +46,7 @@
 
         <label class="input-group" for="email">
           <span class="label-text">Correo</span>
-          <input id="email" name="correo" type="email" placeholder="correo@ejemplo.com" required value="{{ old('correo') }}">
+          <input id="email" name="email" type="email" placeholder="correo@ejemplo.com" required value="{{ old('email') }}">
         </label>
 
         <label class="input-group" for="telefono">
