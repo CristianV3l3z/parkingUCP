@@ -111,7 +111,7 @@
           <div class="avatar" id="avatarBtn" tabindex="0">
             {{ strtoupper(substr(auth()->user()->nombre ?? (auth()->user()->email ?? 'U'), 0, 1)) }}
           </div>
-
+@auth
           <div class="dropdown" id="profileDropdown" aria-hidden="true">
             <div style="padding:8px;border-bottom:1px solid rgba(0,0,0,0.04);">
               <div style="font-weight:800">{{ auth()->user()->nombre ?? auth()->user()->email }}</div>
@@ -124,6 +124,7 @@
                 <button class="btn btn-primary" type="submit">Cerrar sesión</button>
                 </form>
           </div>
+@endauth
         </div>
       </div>
     </div>
