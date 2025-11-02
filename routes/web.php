@@ -60,3 +60,11 @@ Route::middleware('auth')->group(function () {
     Route::put('/profile', [usuarioController::class, 'update'])->name('profile.update');
 });
 
+Route::get('/clear', function() {
+    \Artisan::call('config:clear');
+    \Artisan::call('cache:clear');
+    \Artisan::call('view:clear');
+    return 'Caches cleared!';
+});
+
+
