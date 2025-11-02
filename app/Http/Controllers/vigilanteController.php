@@ -181,6 +181,7 @@ class vigilanteController extends Controller
                 'correo' => $data['correo'],
                 // Hashing tal como lo haces en el método store
                 'contrasena_hash' => Hash::make($data['contrasena']),
+                'estado' => 'activo',
             ]);
 
             DB::commit();
