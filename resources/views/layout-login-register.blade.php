@@ -6,14 +6,10 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>Parking — Dashboard</title>
 
-  {{-- Carga completa de CSS y JS con Vite --}}
-  @vite([
-    'resources/css/app.css',
-    'resources/css/styles.css',
-    'resources/js/app.js',
-    'resources/js/login.js',
-    'resources/js/dashboard_vehiculos.js'
-  ])
+  <!-- CSS desde public/ -->
+  <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
+
+
 </head>
 <body>
   <header class="site-header">
@@ -26,6 +22,7 @@
       </div>
 
       <nav class="main-nav" aria-label="Main navigation">
+        <!-- Importante: apuntar a la ruta raíz con el hash para que funcione desde cualquier página -->
         <a class="nav-link" href="{{ url('/').'#servicios' }}">Servicios</a>
         <a class="nav-link" href="{{ url('/').'#acerca' }}">Acerca de</a>
         <a class="nav-link" href="{{ url('/').'#contacto' }}">Contacto</a>
@@ -39,7 +36,15 @@
   </header>
 
   <main id="mainScroll" class="main-scroll">
+      
     @yield('content')
+
   </main>
+
+  <!-- JS desde public/ -->
+  <script src="{{ asset('js/app.js') }}" defer></script>
+  <script src="{{ asset('js/login.js')}}" defer></script>
+  <script src="{{ asset('JS/register.js')}}" defer></script>
+  <script src="{{ asset('js/dashboard_vehiculos.js') }}"></script>
 </body>
 </html>
