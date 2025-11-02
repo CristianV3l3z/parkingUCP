@@ -118,7 +118,7 @@
               <div style="font-size:13px;color:var(--muted)">{{ auth()->user()->correo ?? auth()->user()->email }}</div>
             </div>
 
-            <a href="{{ route('usuario.edit') }}" id="editProfileBtn">Editar perfil</a>
+            <a href="{{ route('usuario.edit') }}" id="editProfileBtn">Editar perfil.</a>
                 <form action="{{ route('logout') }}" method="POST" style="display:inline;">
                 @csrf
                 <button class="btn btn-primary" type="submit">Cerrar sesión</button>
