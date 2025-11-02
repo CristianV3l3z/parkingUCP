@@ -4,6 +4,7 @@
   @vite([
     'resources/css/app.css',
     'resources/css/styles.css',
+    'resources/css/login.css',
     'resources/js/app.js',
     'resources/js/login.js',
     'resources/js/register.js',
