@@ -12,7 +12,6 @@
     'resources/css/styles.css',
     'resources/js/app.js',
     'resources/js/login.js',
-    'resources/js/register.js',
     'resources/js/dashboard_vehiculos.js'
   ])
 </head>

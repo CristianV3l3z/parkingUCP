@@ -39,7 +39,7 @@
         <div class="status">{{ session('status') }}</div>
       @endif
 
-      <form id="registerForm" action="{{ route('register') }}" method="POST" novalidate>
+      <form id="registerForm" action="{{ route('usuario.register') }}" method="POST" novalidate>
         @csrf
 
         <label class="input-group" for="nombre">
@@ -49,7 +49,7 @@
 
         <label class="input-group" for="email">
           <span class="label-text">Correo</span>
-          <input id="email" name="email" type="email" placeholder="correo@ejemplo.com" required value="{{ old('email') }}">
+          <input id="email" name="correo" type="email" placeholder="correo@ejemplo.com" required value="{{ old('correo') }}">
         </label>
 
         <label class="input-group" for="telefono">
