@@ -8,7 +8,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Usuario; // modelo Usuario (asegúrate que existe)
+use App\Models\usuario; // modelo Usuario (asegúrate que existe)
 use App\Http\Controllers\VigilanteController; // si lo usas en otras partes
 
 class registroController extends Controller
