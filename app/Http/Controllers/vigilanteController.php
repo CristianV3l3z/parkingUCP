@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Vigilante;
+use App\Models\vigilante;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Hash;
@@ -15,7 +15,7 @@ class vigilanteController extends Controller
     // Listar todos los vigilantes
     public function index()
     {
-        return response()->json(Vigilante::all(), 200);
+        return response()->json(vigilante::all(), 200);
     }
 
     // Crear nuevo vigilante
@@ -29,7 +29,7 @@ class vigilanteController extends Controller
 
         DB::beginTransaction();
         try {
-            $vigilante = Vigilante::create([
+            $vigilante = vigilante::create([
                 'nombre' => $data['nombre'],
                 'correo' => $data['correo'],
                 // almacenamos en la columna 'contrasena_hash' tal como tu modelo usa
@@ -56,14 +56,14 @@ class vigilanteController extends Controller
     // Mostrar vigilante
     public function show($id)
     {
-        $vigilante = Vigilante::findOrFail($id);
+        $vigilante = vigilante::findOrFail($id);
         return response()->json($vigilante, 200);
     }
 
     // Actualizar vigilante
     public function update(Request $request, $id)
     {
-        $vigilante = Vigilante::findOrFail($id);
+        $vigilante = vigilante::findOrFail($id);
 
         $data = $request->validate([
             'nombre' => 'sometimes|string|max:100',
@@ -92,7 +92,7 @@ class vigilanteController extends Controller
     // Eliminar vigilante
     public function destroy($id)
     {
-        $vigilante = Vigilante::findOrFail($id);
+        $vigilante = vigilante::findOrFail($id);
         $vigilante->delete();
 
         return response()->json(['message' => 'Vigilante eliminado correctamente'], 200);
@@ -109,7 +109,7 @@ class vigilanteController extends Controller
             'contrasena' => 'required|string'
         ]);
 
-        $vigilante = Vigilante::where('correo', $creds['correo'])->first();
+        $vigilante = vigilante::where('correo', $creds['correo'])->first();
 
         if (! $vigilante || ! Hash::check($creds['contrasena'], $vigilante->contrasena_hash)) {
             return response()->json(['message' => 'Credenciales inválidas'], 401);
@@ -176,7 +176,7 @@ class vigilanteController extends Controller
 
         DB::beginTransaction();
         try {
-            Vigilante::create([
+            vigilante::create([
                 'nombre' => $data['nombre'],
                 'correo' => $data['correo'],
                 // Hashing tal como lo haces en el método store
