@@ -7,7 +7,7 @@
   <title>Parking — Dashboard</title>
 
   <!-- CSS desde public/ -->
-  <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
 
 
 </head>
