@@ -70,7 +70,7 @@
 
       <p class="small">
         ¿No tienes cuenta?
-        <a href="{{ route('usuario.register') }}">Regístrate</a>
+        {{-- <a href="{{ route('usuario.register') }}">Regístrate</a> --}}
       </p>
     </div>
   </section>
