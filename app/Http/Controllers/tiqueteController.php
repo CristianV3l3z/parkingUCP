@@ -20,30 +20,22 @@ class tiqueteController extends Controller
             ->where('activo', true)
             ->orderBy('created_at', 'desc')
             ->get()
-            ->map(function($t){
-                // Mostrar nombre del vigilante con prioridad:
-                // 1. Campo 'vigilante_nombre' (almacenado en la BD)
-                // 2. Campo 'nombre_completo' del modelo
-                // 3. Concatenar nombre + apellido si existen
-                if (!empty($t->vigilante_nombre)) {
-                    $t->nombre_mostrado = $t->vigilante_nombre;
-                } elseif ($t->vigilante) {
-                    if (!empty($t->vigilante->nombre_completo)) {
-                        $t->nombre_mostrado = $t->vigilante->nombre_completo;
-                    } else {
-                        $parts = [];
-                        if (!empty($t->vigilante->nombre)) $parts[] = $t->vigilante->nombre;
-                        if (!empty($t->vigilante->apellido)) $parts[] = $t->vigilante->apellido;
-                        $t->nombre_mostrado = count($parts) ? implode(' ', $parts) : null;
-                    }
-                } else {
-                    $t->nombre_mostrado = null;
-                }
-                return $t;
-            });
+                    ->map(function($t){
+                        // Mostrar nombre del vigilante con prioridad:
+                        // 1. Campo 'vigilante_nombre' (almacenado en la BD)
+                        if (!empty($t->vigilante_nombre)) {
+                            $t->nombre_mostrado = $t->vigilante_nombre;
+                        } elseif ($t->vigilante) {
+                            // 2. Campo 'nombre' del modelo relacionado (ya que 'nombre_completo' y 'apellido' no existen)
+                            $t->nombre_mostrado = $t->vigilante->nombre ?? null;
+                        } else {
+                            $t->nombre_mostrado = null;
+                        }
+                        return $t;
+                    });
 
-        return response()->json($tiquetes, 200);
-    }
+                return response()->json($tiquetes, 200);
+            }
 
 
     public function indexView()
@@ -70,22 +62,19 @@ class tiqueteController extends Controller
 
         $data['codigo_uuid'] = (string) Str::uuid();
 
-        // Buscar y guardar el nombre del vigilante
-        try {
-            $v = \App\Models\Vigilante::find($data['id_vigilante']);
-            if ($v) {
-                $nombre = $v->nombre_completo ?? null;
-                if (!$nombre) {
-                    $parts = [];
-                    if (!empty($v->nombre)) $parts[] = $v->nombre;
-                    if (!empty($v->apellido)) $parts[] = $v->apellido;
-                    $nombre = count($parts) ? implode(' ', $parts) : ($v->nombre ?? null);
+    // Buscar y guardar el nombre del vigilante
+            try {
+                $v = \App\Models\Vigilante::find($data['id_vigilante']);
+                if ($v) {
+                    // Simplificado: solo toma el campo 'nombre' que sí existe en la tabla.
+                    $nombre = $v->nombre ?? null; 
+                    
+                    // Asigna el nombre al array $data para ser guardado
+                    $data['vigilante_nombre'] = $nombre; 
                 }
-                $data['vigilante_nombre'] = $nombre;
+            } catch (\Throwable $e) {
+                Log::warning('No se pudo leer vigilante para nombre: '.$e->getMessage());
             }
-        } catch (\Throwable $e) {
-            Log::warning('No se pudo leer vigilante para nombre: '.$e->getMessage());
-        }
 
         DB::beginTransaction();
         try {

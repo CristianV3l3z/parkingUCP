@@ -19,7 +19,8 @@ class tiquete extends Model
 
     protected $fillable = [
     'codigo_uuid','id_vehiculo','id_vigilante','id_tarifa',
-    'hora_entrada','hora_salida','estado','observaciones','activo'
+    'hora_entrada','hora_salida','estado','observaciones','activo',
+    'vigilante_nombre'
     ];
 
     protected $casts = [
