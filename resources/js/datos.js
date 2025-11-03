@@ -23,20 +23,45 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // helper: extrae "YYYY-MM-DD HH:MM" de varias formas de timestamp que venga el backend
+// helper: extrae "YYYY-MM-DD hh:MM AM/PM" de varias formas de timestamp que venga el backend
   function extractServerDateTime(str) {
     if (!str || typeof str !== 'string') return null;
-    // Busca "YYYY-MM-DD HH:MM" o "YYYY-MM-DDTHH:MM"
-    let m = str.match(/(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2})/);
-    if (m) return m[1] + ' ' + m[2];
-    // fallback: extraer fecha y hora por separado
+
+    // Intenta capturar "YYYY-MM-DD HH:MM" tanto si viene con espacio como con 'T'
+    let m = str.match(/(\d{4}-\d{2}-\d{2})[ T](\d{2}):(\d{2})/);
+    if (m) {
+      const date = m[1];
+      let hour24 = parseInt(m[2], 10);
+      const minute = m[3];
+
+      // convertir a 12h
+      const ampm = hour24 >= 12 ? 'PM' : 'AM';
+      let hour12 = hour24 % 12;
+      if (hour12 === 0) hour12 = 12; // 00 -> 12 AM, 12 -> 12 PM
+      const hourStr = String(hour12).padStart(2, '0');
+
+      return `${date} ${hourStr}:${minute} ${ampm}`;
+    }
+
+    // Fallback: buscar fecha y hora por separado
     m = str.match(/(\d{4}-\d{2}-\d{2})/);
-    const date = m ? m[1] : null;
-    m = str.match(/(\d{2}:\d{2})/);
-    const time = m ? m[1] : null;
-    if (date && time) return date + ' ' + time;
-    // si no encontramos nada devolvemos la cadena original truncada a 16 chars (graceful)
+    const datePart = m ? m[1] : null;
+    m = str.match(/(\d{2}):(\d{2})/);
+    const timePart = m ? { h: parseInt(m[1], 10), m: m[2] } : null;
+    if (datePart && timePart) {
+      const hour24 = timePart.h;
+      const minute = timePart.m;
+      const ampm = hour24 >= 12 ? 'PM' : 'AM';
+      let hour12 = hour24 % 12;
+      if (hour12 === 0) hour12 = 12;
+      const hourStr = String(hour12).padStart(2, '0');
+      return `${datePart} ${hourStr}:${minute} ${ampm}`;
+    }
+
+    // Si no encontramos patrón, devolvemos la cadena truncada (graceful)
     return (typeof str === 'string' && str.length > 16) ? str.substring(0, 16) : str;
   }
+
 
   // Fetch helper con credentials y headers JSON
   async function fetchJson(url) {
