@@ -11,7 +11,7 @@ use App\Models\tiquete;
 use App\Models\pago;
 use Carbon\Carbon;
 
-class checkoutProController extends Controller
+class CheckoutProController extends Controller
 {
     // --- Crear o reutilizar preferencia MP para un tiquete ---
     public function crearPreferencia(Request $request, $id = null)

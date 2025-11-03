@@ -52,7 +52,7 @@ Route::middleware(['vigilante'])->group(function () {
 });
 
 // Ruta de pago de la pasarela (la vista puede redirigir aquí o el navegador)
-Route::get('/pago/{id}', [checkoutProController::class, 'crearPreferencia'])->name('pago.iniciar'); // <-- ¡Corregido el controlador!
+Route::get('/pago/{id}', [CheckoutProController::class, 'crearPreferencia'])->name('pago.iniciar'); // <-- ¡Corregido el controlador!
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile/edit', [usuarioController::class, 'edit'])->name('usuario.edit');
