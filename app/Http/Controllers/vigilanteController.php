@@ -227,7 +227,7 @@ public function edit(Request $request)
     // Buscar vigilante completo en BD
     $vigilante = vigilante::findOrFail($vigilanteSession['id']);
 
-    return view('vigilante.edit', compact('vigilante'));
+    return view('vigilante.profile-edit', compact('vigilante'));
 }
 
 public function updateProfile(Request $request)
