@@ -1,5 +1,9 @@
 // public/js/datos.js
 document.addEventListener('DOMContentLoaded', function () {
+  // Ajuste global (si tu API está enviando UTC y quieres mostrar en UTC-5 pon -5)
+  // Si no necesitas ajuste, pon 0.
+  const ADJUST_HOURS = -5;
+
   // elementos KPI
   const kpi_total = document.getElementById('kpi_total');
   const kpi_carros = document.getElementById('kpi_carros');
@@ -22,46 +26,65 @@ document.addEventListener('DOMContentLoaded', function () {
     return `${yyyy}-${mm}-${dd}`;
   }
 
-  // helper: extrae "YYYY-MM-DD HH:MM" de varias formas de timestamp que venga el backend
-// helper: extrae "YYYY-MM-DD hh:MM AM/PM" de varias formas de timestamp que venga el backend
-  function extractServerDateTime(str) {
-    if (!str || typeof str !== 'string') return null;
+  // helper: extrae "YYYY-MM-DD hh:MM AM/PM" de varias formas de timestamp que venga el backend
+  // aplica ADJUST_HOURS si se requiere (sin usar conversiones de zona del navegador)
+  function extractServerDateTime(str, adjustHours = ADJUST_HOURS) {
+    if (!str || typeof str !== 'string') return '—';
 
-    // Intenta capturar "YYYY-MM-DD HH:MM" tanto si viene con espacio como con 'T'
-    let m = str.match(/(\d{4}-\d{2}-\d{2})[ T](\d{2}):(\d{2})/);
-    if (m) {
-      const date = m[1];
-      let hour24 = parseInt(m[2], 10);
-      const minute = m[3];
+    // 1) limpiamos milisegundos y sufijos de zona (Z o +hh:mm / -hh:mm)
+    const cleaned = str.replace(/\.\d+/, '')        // quitar milisegs si hay (.000000)
+                       .replace(/Z$/i, '')         // quitar Z final
+                       .replace(/([+-]\d{2}:?\d{2})$/,'') // quitar +00:00 o -0500 al final
+                       .trim();
 
-      // convertir a 12h
-      const ampm = hour24 >= 12 ? 'PM' : 'AM';
-      let hour12 = hour24 % 12;
-      if (hour12 === 0) hour12 = 12; // 00 -> 12 AM, 12 -> 12 PM
-      const hourStr = String(hour12).padStart(2, '0');
-
-      return `${date} ${hourStr}:${minute} ${ampm}`;
+    // 2) buscamos YYYY-MM-DD HH:MM (acepta espacio o T)
+    let m = cleaned.match(/(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/);
+    if (!m) {
+      // fallback: intentar extraer por partes (fecha y hora separadas)
+      const dateMatch = cleaned.match(/(\d{4}-\d{2}-\d{2})/);
+      const timeMatch = cleaned.match(/(\d{2}):(\d{2})/);
+      if (dateMatch && timeMatch) {
+        const dm = dateMatch[1].match(/(\d{4})-(\d{2})-(\d{2})/);
+        m = dm ? [null, dm[1], dm[2], dm[3], timeMatch[1], timeMatch[2]] : null;
+      }
     }
 
-    // Fallback: buscar fecha y hora por separado
-    m = str.match(/(\d{4}-\d{2}-\d{2})/);
-    const datePart = m ? m[1] : null;
-    m = str.match(/(\d{2}):(\d{2})/);
-    const timePart = m ? { h: parseInt(m[1], 10), m: m[2] } : null;
-    if (datePart && timePart) {
-      const hour24 = timePart.h;
-      const minute = timePart.m;
-      const ampm = hour24 >= 12 ? 'PM' : 'AM';
-      let hour12 = hour24 % 12;
-      if (hour12 === 0) hour12 = 12;
-      const hourStr = String(hour12).padStart(2, '0');
-      return `${datePart} ${hourStr}:${minute} ${ampm}`;
+    if (!m) {
+      // nada que podamos parsear, devolver una versión truncada
+      return (typeof str === 'string' && str.length > 16) ? str.substring(0, 16) : str;
     }
 
-    // Si no encontramos patrón, devolvemos la cadena truncada (graceful)
-    return (typeof str === 'string' && str.length > 16) ? str.substring(0, 16) : str;
+    // m: [ full, YYYY, MM, DD, HH, mm ]
+    let year = parseInt(m[1], 10);
+    let month = parseInt(m[2], 10);
+    let day = parseInt(m[3], 10);
+    let hour24 = parseInt(m[4], 10);
+    let minute = parseInt(m[5], 10);
+
+    // Si hay ajuste horario, aplicarlo de forma "matemática" y gestionar cambio de fecha.
+    // Usamos Date.UTC y luego leemos con getUTC* para evitar zonas locales.
+    if (adjustHours && Number.isInteger(adjustHours) && adjustHours !== 0) {
+      const utcMillis = Date.UTC(year, month - 1, day, hour24 + adjustHours, minute, 0);
+      const dt = new Date(utcMillis);
+      year = dt.getUTCFullYear();
+      month = dt.getUTCMonth() + 1;
+      day = dt.getUTCDate();
+      hour24 = dt.getUTCHours();
+      minute = dt.getUTCMinutes();
+    }
+
+    // convertir hour24 -> 12h con AM/PM
+    const ampm = hour24 >= 12 ? 'PM' : 'AM';
+    let hour12 = hour24 % 12;
+    if (hour12 === 0) hour12 = 12;
+    const hh = String(hour12).padStart(2, '0');
+    const mmStr = String(minute).padStart(2, '0');
+    const yyyy = String(year).padStart(4, '0');
+    const mmMonth = String(month).padStart(2, '0');
+    const dd = String(day).padStart(2, '0');
+
+    return `${yyyy}-${mmMonth}-${dd} ${hh}:${mmStr} ${ampm}`;
   }
-
 
   // Fetch helper con credentials y headers JSON
   async function fetchJson(url) {
@@ -133,6 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Render simple de barras (estilizado inline)
   function renderChart(obj) {
+    if (!chartEl || !chartLabels) return;
     chartEl.innerHTML = '';
     chartLabels.innerHTML = '';
     const keys = Object.keys(obj || {});
@@ -181,16 +205,16 @@ document.addEventListener('DOMContentLoaded', function () {
       const tfoot = document.getElementById('historyTfoot');
 
       // Limpiar cuerpo y footer
-      tbody.innerHTML = '';
+      if (tbody) tbody.innerHTML = '';
       if (tfoot) tfoot.innerHTML = '';
 
       // Si no hay filas, mostrar mensaje y poner ceros en totales
       if (!rows || rows.length === 0) {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td colspan="9" style="padding:12px;color:var(--muted)">No hay vehículos en este rango.</td>`;
-        tbody.appendChild(tr);
-
-        // Actualizar KPIs y footer a 0
+        if (tbody) {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td colspan="9" style="padding:12px;color:var(--muted)">No hay vehículos en este rango.</td>`;
+          tbody.appendChild(tr);
+        }
         updateAdeudoKPIsAndFooter(0, 0, 0);
         return;
       }
@@ -206,10 +230,16 @@ document.addEventListener('DOMContentLoaded', function () {
         filas++;
         const tr = document.createElement('tr');
 
-        // Formateo local de fechas si existen
-        // Usamos extractServerDateTime para tomar la representación textual enviada por el backend
-        const fechaIngreso = r.fecha_ingreso ? extractServerDateTime(r.fecha_ingreso) : '—';
-        const horaSalida = r.hora_salida ? extractServerDateTime(r.hora_salida) : '—';
+        // La fecha/hora puede venir en diferentes campos dependiendo del backend:
+        // - r.fecha_ingreso (alguna implementaciones)
+        // - r.hora_entrada (tiquete.hora_entrada)
+        // Usamos preferencia por r.hora_entrada si existe.
+        const entradaRaw = r.hora_entrada ?? r.fecha_ingreso ?? null;
+        const salidaRaw  = r.hora_salida ?? r.hora_salida_ticket ?? null; // fallback name
+
+        // Usamos extractServerDateTime para mostrar YYYY-MM-DD hh:MM AM/PM y aplicar ADJUST_HOURS
+        const fechaIngreso = entradaRaw ? extractServerDateTime(String(entradaRaw)) : '—';
+        const horaSalida = salidaRaw ? extractServerDateTime(String(salidaRaw)) : '—';
 
         const tarifaDesc = r.tarifa && r.tarifa.descripcion ? r.tarifa.descripcion : '';
         const tarifaVal  = r.tarifa && r.tarifa.valor ? r.tarifa.valor : '0.00';
@@ -235,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function () {
           <td style="border-top:1px solid rgba(0,0,0,0.04)">${tarifaDesc} — $${tarifaVal}</td>
           <td style="border-top:1px solid rgba(0,0,0,0.04);font-weight:700">$${formatNumber(adeudoNum)}</td>
         `;
-        tbody.appendChild(tr);
+        if (tbody) tbody.appendChild(tr);
       });
 
       // Después de rellenar filas, actualizar KPIs y footer con los totales calculados
@@ -243,8 +273,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     } catch (e) {
       console.error('history error', e);
-      historyTbody.innerHTML = `<tr><td colspan="9" style="padding:12px;color:crimson">Error cargando historial</td></tr>`;
-      // En caso de error, también limpiar KPIs de adeudo para evitar info inconsistente
+      if (historyTbody) historyTbody.innerHTML = `<tr><td colspan="9" style="padding:12px;color:crimson">Error cargando historial</td></tr>`;
       updateAdeudoKPIsAndFooter(0, 0, 0);
     }
   }
@@ -253,7 +282,6 @@ document.addEventListener('DOMContentLoaded', function () {
    * Helper: formatea número a "1,234.56" (dos decimales) según locale ES (puedes cambiar).
    */
   function formatNumber(n) {
-    // Usamos toLocaleString para miles y decimales
     return Number(n).toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
@@ -281,7 +309,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!tfoot) return;
 
     // Crear HTML de la fila de totales; colocamos los totales en las columnas adecuadas
-    // Usamos colspan para ajustarlo visualmente.
     const filaTotales = `
       <tr style="border-top:2px solid rgba(0,0,0,0.06);font-weight:800">
         <td colspan="6" style="padding:10px">Totales${filas !== null ? ' — filas: ' + filas : ''}</td>
@@ -302,14 +329,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
   async function loadAll() {
     const r = computeRange(rangeSelect.value || '7');
-    await loadSummary(r.from, r.to);          // opcional (mantiene otros KPIs)
+    await loadSummary(r.from, r.to);
     await loadIngresos(r.from, r.to);
     const adeudoR = adeudoRange ? computeRange(adeudoRange.value || rangeSelect.value) : r;
-    await loadHistory(r.from, r.to); // <-- aquí es donde calculamos y "reemplazamos" los KPIs de adeudo
+    await loadHistory(r.from, r.to);
   }
 
   // Bind: cuando cambia el select se recarga todo
-  rangeSelect.addEventListener('change', function () { loadAll().catch(console.error); });
+  rangeSelect && rangeSelect.addEventListener('change', function () { loadAll().catch(console.error); });
   if (adeudoRange) adeudoRange.addEventListener('change', function () { loadAll().catch(console.error); });
 
   // Init
