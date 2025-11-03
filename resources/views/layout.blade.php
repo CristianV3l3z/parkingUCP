@@ -15,7 +15,7 @@
   <style>
     /* Variables basicas (ajusta en styles.css si quieres) */
     :root {
-      --bg: #f5f2f0;
+      --bg: #ffffff;
       --card: #fff;
       --muted: #7a7a7a;
       --accent: #ffb300;
