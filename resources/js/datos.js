@@ -166,8 +166,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const tr = document.createElement('tr');
 
         // Formateo local de fechas si existen
-        const fechaIngreso = r.fecha_ingreso ? (new Date(r.fecha_ingreso)).toLocaleString() : '—';
-        const horaSalida   = r.hora_salida   ? (new Date(r.hora_salida)).toLocaleString()   : '—';
+             const fechaIngreso = r.fecha_ingreso ? r.fecha_ingreso.substring(11, 16) : '—';
+const horaSalida   = r.hora_salida ? r.hora_salida.substring(11, 16) : '—';
 
         const tarifaDesc = r.tarifa && r.tarifa.descripcion ? r.tarifa.descripcion : '';
         const tarifaVal  = r.tarifa && r.tarifa.valor ? r.tarifa.valor : '0.00';
