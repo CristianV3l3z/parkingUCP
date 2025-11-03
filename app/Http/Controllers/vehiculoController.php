@@ -21,14 +21,9 @@ class vehiculoController extends Controller
 
     public function index()
     {
-        $vehiculos = vehiculo::with('tarifa')
+        $vehiculos = vehiculo::with(['tarifa', 'vigilante', 'tiquetes'])
                       ->where('activo', true)
-                      ->get()
-                      ->map(function($v) {
-                          // formato de fecha, adeudo, etc. (tu lógica actual)
-                          // ... tu código para created_local, adeudo, valor_tarifa ...
-                          return $v;
-                      });
+                      ->get();
 
         return response()->json($vehiculos, 200);
     }
@@ -125,22 +120,29 @@ class vehiculoController extends Controller
                 // no cambiamos created_at (es histórico); sí actualizamos updated_at
                 $veh->save();
 
-                // Crear un tiquete nuevo manualmente que registre la nueva entrada
+                // Crear un tiquete nuevo manualmente que registre la nueva entrada y GUARDE el nombre del vigilante
                 $tiquete = tiquete::create([
-                    'codigo_uuid'   => (string) Str::uuid(),
-                    'id_vehiculo'   => $veh->id_vehiculo,
-                    'id_vigilante'  => $idVigilanteEffective,
-                    'vigilante_nombre' => $vigilanteNombre,
-                    'id_tarifa'     => $veh->id_tarifa ?? $data['id_tarifa'] ?? null,
-                    'hora_entrada'  => now(),
-                    'hora_salida'   => null,
-                    'estado'        => 1,
-                    'observaciones' => $data['descripcion'] ?? 'Reactivado - nueva entrada'
+                    'codigo_uuid'       => (string) Str::uuid(),
+                    'id_vehiculo'       => $veh->id_vehiculo,
+                    'id_vigilante'      => $idVigilanteEffective,
+                    'vigilante_nombre'  => $vigilanteNombre,
+                    'id_tarifa'         => $veh->id_tarifa ?? $data['id_tarifa'] ?? null,
+                    'hora_entrada'      => now(),
+                    'hora_salida'       => null,
+                    'estado'            => 1,
+                    'observaciones'     => $data['descripcion'] ?? 'Reactivado - nueva entrada'
                 ]);
 
                 DB::commit();
 
-                $veh->load(['tarifa','vigilante']);
+                // recargar relaciones para la respuesta
+                $veh->load(['tarifa', 'vigilante', 'tiquetes']);
+
+                // Forzar inclusión del accessor si tu modelo no tiene $appends global
+                if (method_exists($veh, 'setAppends')) {
+                    $veh->setAppends(array_unique(array_merge($veh->getAppends(), ['vigilante_display'])));
+                }
+
                 return response()->json([
                     'message' => 'Vehículo reactivado y tiquete creado',
                     'vehiculo' => $veh,
@@ -163,26 +165,29 @@ class vehiculoController extends Controller
 
                 if ($possibleTiquete) {
                     // actualizamos vigilante_nombre si está vacío o nulo
+                    $updated = false;
                     if (empty($possibleTiquete->vigilante_nombre) && $vigilanteNombre) {
                         $possibleTiquete->vigilante_nombre = $vigilanteNombre;
-                        // también aseguramos id_vigilante en el tiquete si no existe
-                        if (empty($possibleTiquete->id_vigilante) && $idVigilanteEffective) {
-                            $possibleTiquete->id_vigilante = $idVigilanteEffective;
-                        }
-                        $possibleTiquete->save();
+                        $updated = true;
                     }
+                    // también aseguramos id_vigilante en el tiquete si no existe
+                    if (empty($possibleTiquete->id_vigilante) && $idVigilanteEffective) {
+                        $possibleTiquete->id_vigilante = $idVigilanteEffective;
+                        $updated = true;
+                    }
+                    if ($updated) $possibleTiquete->save();
                 } else {
-                    // no hay tiquete: lo creamos manualmente
+                    // no hay tiquete: lo creamos manualmente y guardamos vigilante_nombre
                     $possibleTiquete = tiquete::create([
-                        'codigo_uuid'   => (string) Str::uuid(),
-                        'id_vehiculo'   => $veh->id_vehiculo,
-                        'id_vigilante'  => $idVigilanteEffective,
-                        'vigilante_nombre' => $vigilanteNombre,
-                        'id_tarifa'     => $veh->id_tarifa ?? $data['id_tarifa'] ?? null,
-                        'hora_entrada'  => now(),
-                        'hora_salida'   => null,
-                        'estado'        => 1,
-                        'observaciones' => $data['descripcion'] ?? 'Creado automáticamente al registrar vehículo'
+                        'codigo_uuid'       => (string) Str::uuid(),
+                        'id_vehiculo'       => $veh->id_vehiculo,
+                        'id_vigilante'      => $idVigilanteEffective,
+                        'vigilante_nombre'  => $vigilanteNombre,
+                        'id_tarifa'         => $veh->id_tarifa ?? $data['id_tarifa'] ?? null,
+                        'hora_entrada'      => now(),
+                        'hora_salida'       => null,
+                        'estado'            => 1,
+                        'observaciones'     => $data['descripcion'] ?? 'Creado automáticamente al registrar vehículo'
                     ]);
                 }
             } catch (\Throwable $innerEx) {
@@ -191,6 +196,15 @@ class vehiculoController extends Controller
             }
 
             DB::commit();
+
+            // recargar relaciones para la respuesta
+            $veh->load(['tarifa', 'vigilante', 'tiquetes']);
+
+            // Forzar inclusión del accessor si tu modelo no tiene $appends global
+            if (method_exists($veh, 'setAppends')) {
+                $veh->setAppends(array_unique(array_merge($veh->getAppends(), ['vigilante_display'])));
+            }
+
             return response()->json([
                 'message' => 'Vehículo creado correctamente',
                 'id'      => $veh->id_vehiculo,
@@ -206,7 +220,7 @@ class vehiculoController extends Controller
 
     public function show($id)
     {
-        $vehiculo = vehiculo::with(['usuario', 'tarifa'])->findOrFail($id);
+        $vehiculo = vehiculo::with(['usuario', 'tarifa', 'tiquetes'])->findOrFail($id);
         return response()->json($vehiculo, 200);
     }
 
