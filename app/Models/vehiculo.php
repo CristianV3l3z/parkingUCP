@@ -61,9 +61,12 @@ class vehiculo extends Model {
             try {
                 // Determinar id del vigilante: Auth o session('vigilante')
                 $idVigilante = null;
-                if (Auth::check()) {
-                    // Si tu guard usa id_vigilante en el user, intenta varios campos
-                    $idVigilante = Auth::user()->id_vigilante ?? Auth::id() ?? null;
+                if (Auth::guard('vigilante')->check()) {
+                    $user = Auth::guard('vigilante')->user();
+                    $idVigilante = $user->id_vigilante ?? $user->id ?? null;
+                } elseif (Auth::check()) {
+                    $user = Auth::user();
+                    $idVigilante = $user->id_vigilante ?? $user->id ?? null;
                 }
                 if (!$idVigilante && session()->has('vigilante')) {
                     $v = session('vigilante');
