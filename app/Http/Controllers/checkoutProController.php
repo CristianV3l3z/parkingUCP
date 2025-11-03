@@ -11,7 +11,7 @@ use App\Models\tiquete;
 use App\Models\pago;
 use Carbon\Carbon;
 
-class CheckoutProController extends Controller 
+class CheckoutProController extends Controller
 {
     // --- Crear o reutilizar preferencia MP para un tiquete ---
     public function crearPreferencia(Request $request, $id = null)
@@ -41,7 +41,6 @@ class CheckoutProController extends Controller
         // Intentamos resolver id_usuario (robusto: auth() o session)
         $idUsuario = null;
         if (auth()->check()) {
-            // si tu usuario en Auth tiene id_usuario usa eso
             $user = auth()->user();
             $idUsuario = $user->id_usuario ?? $user->id ?? null;
         } else {
