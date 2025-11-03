@@ -57,4 +57,22 @@ class tiquete extends Model
     {
         return $this->belongsTo(tarifa::class, 'id_tarifa', 'id_tarifa');
     }
+
+        // Convertir hora_entrada a zona horaria America/Bogota automáticamente
+    public function getHoraEntradaAttribute($value)
+    {
+        if ($value) {
+            return Carbon::parse($value)->setTimezone('America/Bogota');
+        }
+        return null;
+    }
+
+    // Convertir hora_salida a zona horaria America/Bogota automáticamente
+    public function getHoraSalidaAttribute($value)
+    {
+        if ($value) {
+            return Carbon::parse($value)->setTimezone('America/Bogota');
+        }
+        return null;
+    }
 }
