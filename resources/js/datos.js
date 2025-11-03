@@ -22,6 +22,22 @@ document.addEventListener('DOMContentLoaded', function () {
     return `${yyyy}-${mm}-${dd}`;
   }
 
+  // helper: extrae "YYYY-MM-DD HH:MM" de varias formas de timestamp que venga el backend
+  function extractServerDateTime(str) {
+    if (!str || typeof str !== 'string') return null;
+    // Busca "YYYY-MM-DD HH:MM" o "YYYY-MM-DDTHH:MM"
+    let m = str.match(/(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2})/);
+    if (m) return m[1] + ' ' + m[2];
+    // fallback: extraer fecha y hora por separado
+    m = str.match(/(\d{4}-\d{2}-\d{2})/);
+    const date = m ? m[1] : null;
+    m = str.match(/(\d{2}:\d{2})/);
+    const time = m ? m[1] : null;
+    if (date && time) return date + ' ' + time;
+    // si no encontramos nada devolvemos la cadena original truncada a 16 chars (graceful)
+    return (typeof str === 'string' && str.length > 16) ? str.substring(0, 16) : str;
+  }
+
   // Fetch helper con credentials y headers JSON
   async function fetchJson(url) {
     const r = await fetch(url, { headers: { 'Accept': 'application/json' }, credentials: 'same-origin' });
@@ -166,14 +182,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const tr = document.createElement('tr');
 
         // Formateo local de fechas si existen
-const fechaIngreso = r.fecha_ingreso 
-  ? r.fecha_ingreso.substring(0, 10) + ' ' + r.fecha_ingreso.substring(11, 16) 
-  : '—';
-
-const horaSalida = r.hora_salida 
-  ? r.hora_salida.substring(0, 10) + ' ' + r.hora_salida.substring(11, 16) 
-  : '—';
-
+        // Usamos extractServerDateTime para tomar la representación textual enviada por el backend
+        const fechaIngreso = r.fecha_ingreso ? extractServerDateTime(r.fecha_ingreso) : '—';
+        const horaSalida = r.hora_salida ? extractServerDateTime(r.hora_salida) : '—';
 
         const tarifaDesc = r.tarifa && r.tarifa.descripcion ? r.tarifa.descripcion : '';
         const tarifaVal  = r.tarifa && r.tarifa.valor ? r.tarifa.valor : '0.00';
@@ -264,7 +275,6 @@ const horaSalida = r.hora_salida
     tfoot.innerHTML = filaTotales;
   }
 
-
   async function loadAll() {
     const r = computeRange(rangeSelect.value || '7');
     await loadSummary(r.from, r.to);          // opcional (mantiene otros KPIs)
@@ -272,7 +282,6 @@ const horaSalida = r.hora_salida
     const adeudoR = adeudoRange ? computeRange(adeudoRange.value || rangeSelect.value) : r;
     await loadHistory(r.from, r.to); // <-- aquí es donde calculamos y "reemplazamos" los KPIs de adeudo
   }
-
 
   // Bind: cuando cambia el select se recarga todo
   rangeSelect.addEventListener('change', function () { loadAll().catch(console.error); });
