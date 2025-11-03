@@ -156,7 +156,7 @@ Route::prefix('datos')->group(function () {
 
 
 // Rutas de Mercado Pago
-Route::post('/checkout/create', [CheckoutProController::class, 'crearPreferencia']);
+Route::post('/checkout/create', 'App\Http\Controllers\CheckoutProController@crearPreferencia');
 Route::post('/checkout/{id}/create', [CheckoutProController::class, 'crearPreferencia']);
 Route::post('/checkout/webhook', [CheckoutProController::class, 'webhook']);
 Route::get('/checkout/status/{id_tiquete}', [CheckoutProController::class, 'status']);
