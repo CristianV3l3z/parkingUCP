@@ -1,6 +1,9 @@
 @extends('layout-vigilante')
 
 @section('content')
+ @vite([
+    'resources/css/styles.css',
+  ])
 <div class="container">
     <h1>Editar Perfil</h1>
 
