@@ -1,4 +1,4 @@
-@extends('layouts.vigilante')
+@extends('layout-vigilante')
 
 @section('content')
 <div class="container">
