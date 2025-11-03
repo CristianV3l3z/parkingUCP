@@ -59,40 +59,83 @@ class vehiculo extends Model {
     {
         static::created(function ($vehiculo) {
             try {
-                // Determinar id del vigilante: Auth o session('vigilante')
+                // 1) Intentar resolver id de vigilante desde varios lugares:
                 $idVigilante = null;
-                if (Auth::guard('vigilante')->check()) {
-                    $user = Auth::guard('vigilante')->user();
-                    $idVigilante = $user->id_vigilante ?? $user->id ?? null;
-                } elseif (Auth::check()) {
-                    $user = Auth::user();
-                    $idVigilante = $user->id_vigilante ?? $user->id ?? null;
-                }
-                if (!$idVigilante && session()->has('vigilante')) {
-                    $v = session('vigilante');
-                    $idVigilante = $v['id_vigilante'] ?? $v['id'] ?? $v['id_usuario'] ?? null;
+                $vigilanteNombre = null;
+
+                // Prioridad:
+                //  - Auth guard 'vigilante'
+                //  - Auth default (web)
+                //  - session('vigilante') array
+                //  - session()->get('user') u otros (por si usas otra llave)
+
+                // Intentar guard 'vigilante'
+                try {
+                    if (\Illuminate\Support\Facades\Auth::guard('vigilante')->check()) {
+                        $u = \Illuminate\Support\Facades\Auth::guard('vigilante')->user();
+                        $idVigilante = $u->id_vigilante ?? $u->id ?? null;
+                    }
+                } catch (\Throwable $e) {
+                    // guard 'vigilante' puede no existir, ignorar
+                    Log::debug('vehiculo::booted - guard vigilante check failed: '.$e->getMessage());
                 }
 
-                // Obtener nombre del vigilante (si hay id) - usamos el modelo importado 'vigilante'
-                $vigilanteNombre = null;
-                if ($idVigilante) {
-                    $v = vigilante::find($idVigilante);
-                    if ($v) {
-                        if (!empty($v->nombre_completo)) {
-                            $vigilanteNombre = $v->nombre_completo;
-                        } else {
-                            $parts = [];
-                            if (!empty($v->nombre)) $parts[] = $v->nombre;
-                            if (!empty($v->apellido)) $parts[] = $v->apellido;
-                            $vigilanteNombre = count($parts) ? implode(' ', $parts) : ($v->nombre ?? null);
+                // Si no encontrado, intentar Auth::user() (web or default)
+                if (empty($idVigilante)) {
+                    try {
+                        if (\Illuminate\Support\Facades\Auth::check()) {
+                            $u2 = \Illuminate\Support\Facades\Auth::user();
+                            $idVigilante = $u2->id_vigilante ?? $u2->id ?? $idVigilante;
                         }
+                    } catch (\Throwable $e) {
+                        Log::debug('vehiculo::booted - Auth::check() failed: '.$e->getMessage());
                     }
                 }
 
+                // Si no hay id, intentar session('vigilante')
+                if (empty($idVigilante) && session()->has('vigilante')) {
+                    $sv = session('vigilante');
+                    $idVigilante = $sv['id_vigilante'] ?? $sv['id'] ?? $sv['id_usuario'] ?? $idVigilante;
+                }
+
+                // Si aún no hay id, intentar session()->get('user') u otras llaves comunes
+                if (empty($idVigilante)) {
+                    $sv2 = session()->get('user');
+                    if (is_array($sv2) && !empty($sv2['id_vigilante'])) {
+                        $idVigilante = $sv2['id_vigilante'];
+                    }
+                }
+
+                // Obtener nombre si hay id
+                if ($idVigilante) {
+                    try {
+                        $v = \App\Models\vigilante::find($idVigilante);
+                        if ($v) {
+                            if (!empty($v->nombre_completo)) {
+                                $vigilanteNombre = $v->nombre_completo;
+                            } else {
+                                $parts = [];
+                                if (!empty($v->nombre)) $parts[] = $v->nombre;
+                                if (!empty($v->apellido)) $parts[] = $v->apellido;
+                                $vigilanteNombre = count($parts) ? implode(' ', $parts) : ($v->nombre ?? null);
+                            }
+                        }
+                    } catch (\Throwable $e) {
+                        Log::debug('vehiculo::booted - error finding vigilante model: '.$e->getMessage());
+                    }
+                }
+
+                Log::info('vehiculo::booted - resolved vigilante', [
+                    'vehiculo_id' => $vehiculo->id_vehiculo ?? null,
+                    'id_vigilante' => $idVigilante,
+                    'vigilante_nombre' => $vigilanteNombre
+                ]);
+
+                // Preparar tiqueteData
                 $idTarifa = $vehiculo->id_tarifa ?? null;
 
                 $tiqueteData = [
-                    'codigo_uuid' => (string) Str::uuid(),
+                    'codigo_uuid' => (string) \Illuminate\Support\Str::uuid(),
                     'id_vehiculo' => $vehiculo->id_vehiculo,
                     'id_vigilante' => $idVigilante,
                     'id_tarifa' => $idTarifa,
@@ -102,16 +145,13 @@ class vehiculo extends Model {
                     'observaciones' => $vehiculo->descripcion ?? 'Creado automáticamente al registrar vehículo'
                 ];
 
-                // añadir nombre si se consiguió
                 if ($vigilanteNombre) {
                     $tiqueteData['vigilante_nombre'] = $vigilanteNombre;
                 }
 
-                // crea el tiquete
-                tiquete::create($tiqueteData);
+                \App\Models\tiquete::create($tiqueteData);
 
             } catch (\Throwable $e) {
-                // No interrumpir la creación del vehículo si algo falla
                 Log::error('Error auto-creando tiquete desde vehiculo::created - ' . $e->getMessage(), [
                     'vehiculo_id' => $vehiculo->id_vehiculo ?? null,
                     'trace' => $e->getTraceAsString()
@@ -119,6 +159,7 @@ class vehiculo extends Model {
             }
         });
     }
+
 
     // Relación con vigilante cuando id_usuario apunta a la tabla vigilante
     public function vigilante()
