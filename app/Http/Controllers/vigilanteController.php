@@ -215,5 +215,61 @@ public function loginViaCredentials($email, $password, $request)
     return null;
 }
 
+public function edit(Request $request)
+{
+    // Obtenemos el vigilante desde sesión
+    $vigilanteSession = $request->session()->get('vigilante');
+
+    if (!$vigilanteSession) {
+        return redirect()->route('login')->with('error', 'Por favor inicia sesión.');
+    }
+
+    // Buscar vigilante completo en BD
+    $vigilante = vigilante::findOrFail($vigilanteSession['id']);
+
+    return view('vigilante.edit', compact('vigilante'));
+}
+
+public function updateProfile(Request $request)
+{
+    $vigilanteSession = $request->session()->get('vigilante');
+
+    if (!$vigilanteSession) {
+        return redirect()->route('login')->with('error', 'Por favor inicia sesión.');
+    }
+
+    $vigilante = vigilante::findOrFail($vigilanteSession['id']);
+
+    $data = $request->validate([
+        'nombre' => 'required|string|max:100',
+        'correo' => [
+            'required',
+            'email',
+            'max:150',
+            Rule::unique('vigilante', 'correo')->ignore($vigilante->id_vigilante, 'id_vigilante')
+        ],
+        'contrasena' => 'nullable|string|min:6|confirmed',
+    ]);
+
+    $vigilante->nombre = $data['nombre'];
+    $vigilante->correo = $data['correo'];
+
+    if (!empty($data['contrasena'])) {
+        $vigilante->contrasena_hash = Hash::make($data['contrasena']);
+    }
+
+    $vigilante->save();
+
+    // Actualizar sesión con los nuevos datos
+    $request->session()->put('vigilante', [
+        'id' => $vigilante->id_vigilante,
+        'nombre' => $vigilante->nombre,
+        'correo' => $vigilante->correo,
+    ]);
+
+    return redirect()->route('perfil.edit')->with('success', 'Perfil actualizado correctamente');
+}
+
+
 
 }

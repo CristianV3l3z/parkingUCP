@@ -21,6 +21,21 @@
 
             {{-- Perfil y notificaciones --}}
             <div>
+{{-- Perfil y notificaciones --}}
+<div class="user-menu">
+    @if(session('vigilante'))
+        <span>Hola, {{ session('vigilante.nombre') }}</span>
+        <nav>
+            <a href="{{ route('perfil.edit') }}">Editar Perfil</a> |
+            <form method="POST" action="{{ route('logout') }}" style="display:inline;">
+                @csrf
+                <button type="submit" class="logout-button">Cerrar sesión</button>
+            </form>
+        </nav>
+    @else
+        <a href="{{ route('login') }}">Iniciar sesión</a>
+    @endif
+</div>
 
             </div>
         </div>
