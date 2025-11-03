@@ -278,6 +278,10 @@ class datosController extends Controller
 
         // Formatear salida para JSON
         $out = array_map(function($r){
+            // Convertir fechas UTC a zona horaria 'America/Bogota'
+    $fechaIngresoLocal = $r->fecha_ingreso ? Carbon::parse($r->fecha_ingreso)->setTimezone('America/Bogota') : null;
+    $horaEntradaLocal = $r->hora_entrada ? Carbon::parse($r->hora_entrada)->setTimezone('America/Bogota') : null;
+    $horaSalidaLocal = $r->hora_salida ? Carbon::parse($r->hora_salida)->setTimezone('America/Bogota') : null;
             return [
                 'id_vehiculo' => $r->id_vehiculo,
                 'placa' => $r->placa,
