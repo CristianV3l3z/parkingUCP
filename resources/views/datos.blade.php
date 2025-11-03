@@ -8,7 +8,8 @@
     'resources/js/app.js',
     'resources/js/login.js',
     'resources/js/register.js',
-    'resources/js/dashboard_vehiculos.js'
+    'resources/js/dashboard_vehiculos.js',
+        'resources/js/datos.js'
   ])
 
 <div class="app-shell" style="min-height:100vh;display:flex;background:var(--bg)">
