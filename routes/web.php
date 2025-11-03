@@ -66,7 +66,7 @@ Route::get('/vigilante/crear', [vigilanteController::class, 'showCreateForm'])->
 Route::post('/vigilante/crear', [vigilanteController::class, 'create'])->name('vigilante.store.web');
 
 // Mostrar formulario edición perfil
-Route::get('/perfil', [App\Http\Controllers\VigilanteController::class, 'edit'])->name('perfil.edit');
+Route::get('/perfil', [App\Http\Controllers\vigilanteController::class, 'edit'])->name('perfil.edit');
 
 // Actualizar perfil
-Route::put('/perfil', [App\Http\Controllers\VigilanteController::class, 'update'])->name('perfil.update');
+Route::put('/perfil', [App\Http\Controllers\vigilanteController::class, 'update'])->name('perfil.update');
