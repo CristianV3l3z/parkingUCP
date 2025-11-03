@@ -40,12 +40,13 @@ class tarifaController extends Controller
                 'tarifa' => $tarifa
             ], 201)->header('Location', route('tarifas.show', $tarifa->id_tarifa));
         } catch (\Throwable $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => 'Error al crear la tarifa',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+    DB::rollBack();
+    return response()->json([
+        'message' => 'Error al crear la tarifa',
+        'error' => $e->getMessage(),
+        'trace' => $e->getTraceAsString(),
+    ], 500);
+}
     }
 
     public function show($id)
