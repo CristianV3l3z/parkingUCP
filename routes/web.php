@@ -7,6 +7,7 @@ use App\Http\Controllers\vigilanteController;
 use App\Http\Controllers\datosController;
 use App\Http\Controllers\tiqueteController;
 use App\Http\Controllers\pagoController;
+use App\Http\Controllers\CheckoutProController; // <-- ¡Nuevo: Importar el controlador de pago!
 
 /*
 |--------------------------------------------------------------------------
@@ -50,7 +51,8 @@ Route::middleware(['vigilante'])->group(function () {
     
 });
 
-Route::get('/pago/{id}', [pagoController::class, 'crearPreferencia']);
+// Ruta de pago de la pasarela (la vista puede redirigir aquí o el navegador)
+Route::get('/pago/{id}', [CheckoutProController::class, 'crearPreferencia'])->name('pago.iniciar'); // <-- ¡Corregido el controlador!
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile/edit', [usuarioController::class, 'edit'])->name('usuario.edit');
