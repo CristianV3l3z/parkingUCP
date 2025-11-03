@@ -69,4 +69,5 @@ Route::post('/vigilante/crear', [vigilanteController::class, 'create'])->name('v
 Route::get('/perfil', [App\Http\Controllers\vigilanteController::class, 'edit'])->name('perfil.edit');
 
 // Actualizar perfil
-Route::put('/perfil', [App\Http\Controllers\vigilanteController::class, 'update'])->name('perfil.update');
+// Cambia 'update' por 'updateProfile'
+Route::put('/perfil', [App\Http\Controllers\vigilanteController::class, 'updateProfile'])->name('perfil.update');
