@@ -7,6 +7,8 @@ use App\Http\Controllers\tarifaController;
 use App\Http\Controllers\tiqueteController;
 use App\Http\Controllers\registroController;
 use App\Http\Controllers\datosController;
+use App\Http\Controllers\CheckoutProController; // <-- Movido aquí
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -75,7 +77,7 @@ Route::prefix('vehiculo')->group(function () {
     Route::put('/{id}', [vehiculoController::class, 'update'])->name('vehiculo.update');
     
     //Eliminar un vehiculo
-    Route::patch('/{id}', [vehiculoController::class, 'update']);
+    Route::put('/{id}', [vehiculoController::class, 'update']);
     
     //Eliminar un vehiculo
     Route::delete('/{id}', [vehiculoController::class, 'destroy'])->name('vehiculo.destroy');
@@ -153,8 +155,7 @@ Route::prefix('datos')->group(function () {
 });
 
 
-use App\Http\Controllers\CheckoutProController;
-
+// Rutas de Mercado Pago
 Route::post('/checkout/create', [CheckoutProController::class, 'crearPreferencia']);
 Route::post('/checkout/{id}/create', [CheckoutProController::class, 'crearPreferencia']);
 Route::post('/checkout/webhook', [CheckoutProController::class, 'webhook']);
