@@ -129,10 +129,7 @@ document.addEventListener('DOMContentLoaded', function () {
               <div style="font-weight:700;margin-top:6px">${ticket.hora_salida ? new Date(ticket.hora_salida).toLocaleString() : '— (abierto)'}</div>
             </div>
 
-            <div>
-              <div style="font-size:13px;color:var(--muted)">Vigilante</div>
-              <div style="font-weight:700;margin-top:6px">${esc(ticket.vigilante_nombre ?? (ticket.vigilante?.nombre ?? '—'))}</div>
-            </div>
+          
             <div>
               <div style="font-size:13px;color:var(--muted)">Código</div>
               <div style="font-weight:700;margin-top:6px">${esc(ticket.codigo_uuid ?? '—')}</div>
