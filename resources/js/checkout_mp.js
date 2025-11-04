@@ -19,15 +19,24 @@ async function startCheckoutTiquete(idTiquete, title, amount, currency = 'COP') 
     }
     const json = await res.json();
 
-    // abrir checkout en nueva ventana (init_point)
-    const initPoint = json.init_point;
-    const prefId = json.preference_id;
+    // abrir checkout en nueva ventana (preferir init_point, fallback sandbox_init_point)
+    const initPoint = json.init_point || json.sandbox_init_point || null;
+    const prefId = json.preference_id || json.id || null;
     if (!initPoint) throw new Error('init_point no disponible');
 
-    const win = window.open(initPoint, '_blank', 'width=1024,height=700');
+    // abrir en nueva ventana; si popup bloqueado, redirigir en la misma pestaña
+    let win = null;
+    try {
+      win = window.open(initPoint, '_blank', 'width=1024,height=700,noopener');
+      if (!win) {
+        // popup bloqueado -> navegar
+        window.location.href = initPoint;
+      }
+    } catch (e) {
+      window.location.href = initPoint;
+    }
 
     // ahora hacemos polling local para comprobar estado de pago en tabla "pago"
-    // se puede hacer polling cada 2.5s hasta timeout (por ejemplo 2 minutos)
     const start = Date.now();
     const timeoutMs = 2 * 60 * 1000; // 2 minutos
     const intervalMs = 2500;
@@ -36,19 +45,27 @@ async function startCheckoutTiquete(idTiquete, title, amount, currency = 'COP') 
       const interval = setInterval(async () => {
         try {
           const stRes = await fetch(`/api/checkout/status/${idTiquete}`, { headers: { 'Accept':'application/json' }});
-          if (!stRes.ok) {
-            // si no hay pagos aún, seguir
-            // if 404 => no pagos, continuar
-            // console.debug('checkout status not ready', await stRes.text());
-          } else {
+          if (stRes.ok) {
             const body = await stRes.json();
             const pago = body.pago;
-            if (pago && pago.estado_pago && String(pago.estado_pago).toLowerCase().includes('approved')) {
-              clearInterval(interval);
-              resolve({ success: true, pago });
-              if (win && !win.closed) {
-                // opcional: cerrar la ventana de MP
-                try { win.close(); } catch(e) {}
+            if (pago && pago.estado_pago) {
+              const st = String(pago.estado_pago).toLowerCase();
+              if (st.includes('aprobado') || st.includes('approved')) {
+                clearInterval(interval);
+                resolve({ success: true, pago });
+                if (win && !win.closed) {
+                  try { win.close(); } catch(e) {}
+                }
+                return;
+              }
+              // si está rechazado -> resolver con fallo
+              if (st.includes('rechazado') || st.includes('rejected')) {
+                clearInterval(interval);
+                resolve({ success: false, pago });
+                if (win && !win.closed) {
+                  try { win.close(); } catch(e) {}
+                }
+                return;
               }
             }
           }
@@ -69,3 +86,6 @@ async function startCheckoutTiquete(idTiquete, title, amount, currency = 'COP') 
     throw e;
   }
 }
+
+// Exponer globalmente si quieres
+window.startCheckoutTiquete = startCheckoutTiquete;

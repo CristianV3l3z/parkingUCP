@@ -26,19 +26,16 @@ class CheckoutProController extends Controller
             return response()->json(['message' => 'Tiquete no encontrado'], 404);
         }
 
-        // El tiquete debe estar en estado abierto (1) para poder iniciar pago
         if ((int)$tiquete->estado !== 1) {
             return response()->json(['message' => 'El tiquete no está en estado abierto (1).'], 400);
         }
 
-        // Calcula monto (ajusta a tu lógica si necesitas)
         $valorHora = $tiquete->tarifa->valor ?? 0;
         $horaEntrada = $tiquete->hora_entrada ? Carbon::parse($tiquete->hora_entrada) : Carbon::parse($tiquete->created_at);
         $horaSalida = $tiquete->hora_salida ? Carbon::parse($tiquete->hora_salida) : Carbon::now();
         $hours = (int) ceil(max(0, $horaSalida->floatDiffInHours($horaEntrada)));
         $monto = max((float)$valorHora * max(1, $hours), 0);
 
-        // Intentamos resolver id_usuario (robusto: auth() o session)
         $idUsuario = null;
         if (auth()->check()) {
             $user = auth()->user();
@@ -47,15 +44,12 @@ class CheckoutProController extends Controller
             $idUsuario = session('vigilante.id_usuario') ?? session('usuario.id_usuario') ?? null;
         }
 
-        // Revisar si existe pago para este tiquete (orden descendente)
         $existing = pago::where('id_tiquete', $tiquete->id_tiquete)->orderBy('created_at','desc')->first();
 
-        // Si ya existe pago aprobado -> no permitir nuevo intento
         if ($existing && $existing->estado_pago === 'aprobado') {
             return response()->json(['message' => 'Este tiquete ya tiene un pago aprobado.'], 400);
         }
 
-        // Si existe y tiene init_point y está pendiente -> devolverlo para reintento inmediato
         if ($existing && $existing->mp_init_point && $existing->estado_pago === 'pendiente') {
             return response()->json([
                 'init_point' => $existing->mp_init_point,
@@ -65,7 +59,6 @@ class CheckoutProController extends Controller
             ], 200);
         }
 
-        // Construir payload preference MP
         $preferenceData = [
             "items" => [
                 [
@@ -92,6 +85,7 @@ class CheckoutProController extends Controller
                 return response()->json(['message'=>'MERCADOPAGO_ACCESS_TOKEN no configurado'], 500);
             }
 
+            // Llamada a MercadoPago
             $resp = Http::withToken($token)
                 ->post('https://api.mercadopago.com/checkout/preferences', $preferenceData);
 
@@ -108,19 +102,18 @@ class CheckoutProController extends Controller
             DB::beginTransaction();
             try {
                 if ($existing) {
-                    // actualizar el pago existente para reintento (no insertar duplicado)
                     $existing->id_usuario = $idUsuario;
                     $existing->monto = $monto;
                     $existing->metodo_pago = 'mercado_pago';
-                    $existing->fecha_pago = now(); // registramos intento ahora
+                    $existing->fecha_pago = now();
                     $existing->estado_pago = 'pendiente';
                     $existing->recibo = $recibo;
                     $existing->mp_preference_id = $json['id'] ?? null;
-                    $existing->mp_init_point = $json['init_point'] ?? null;
+                    // preferir sandbox_init_point si existe
+                    $existing->mp_init_point = $json['init_point'] ?? $json['sandbox_init_point'] ?? null;
                     $existing->save();
                     $pago = $existing;
                 } else {
-                    // crear nuevo pago
                     $pago = pago::create([
                         'id_tiquete'       => $tiquete->id_tiquete,
                         'id_usuario'       => $idUsuario,
@@ -130,7 +123,7 @@ class CheckoutProController extends Controller
                         'estado_pago'      => 'pendiente',
                         'recibo'           => $recibo,
                         'mp_preference_id' => $json['id'] ?? null,
-                        'mp_init_point'    => $json['init_point'] ?? null,
+                        'mp_init_point'    => $json['init_point'] ?? $json['sandbox_init_point'] ?? null,
                     ]);
                 }
                 DB::commit();
@@ -140,10 +133,28 @@ class CheckoutProController extends Controller
                 return response()->json(['message'=>'Error guardando pago local','error'=>$e->getMessage()], 500);
             }
 
-            // devolvemos init_point al front
+            // Logging adicional (temporal) para saber si vino sandbox o prod
+            try {
+                Log::info('MP preference created', [
+                    'pref_id' => $json['id'] ?? null,
+                    'init_point_present' => isset($json['init_point']),
+                    'sandbox_init_point_present' => isset($json['sandbox_init_point']),
+                    'sandbox_init_point' => $json['sandbox_init_point'] ?? null,
+                    'init_point' => $json['init_point'] ?? null,
+                    'tiquete' => $tiquete->id_tiquete,
+                    'token_tail' => '***'.substr($token, -6),
+                ]);
+            } catch (\Throwable $e) {
+                // no interrumpir flujo por logging
+                Log::warning('MP debug logging failed', ['error' => $e->getMessage()]);
+            }
+
+            $initPoint = $json['init_point'] ?? $json['sandbox_init_point'] ?? null;
+            $preferenceId = $json['id'] ?? null;
+
             return response()->json([
-                'init_point' => $json['init_point'] ?? null,
-                'preference_id' => $json['id'] ?? null,
+                'init_point' => $initPoint,
+                'preference_id' => $preferenceId,
                 'pago_id' => $pago->id_pago ?? null
             ], 201);
 
@@ -164,7 +175,12 @@ class CheckoutProController extends Controller
     // --- webhook (actualiza mp_payment_id, mp_raw_response, mapea estado y cierra tiquete cuando aprobado) ---
     public function webhook(Request $request)
     {
-        Log::info('MP webhook received', ['payload' => $request->all()]);
+        // log raw para depuración (temporal)
+        Log::info('MP webhook raw', [
+            'headers' => $request->headers->all(),
+            'body' => $request->getContent(),
+            'query' => $request->query()
+        ]);
 
         $data = $request->all();
         $paymentId = null;
@@ -175,6 +191,7 @@ class CheckoutProController extends Controller
         }
 
         if (!$paymentId) {
+            Log::warning('MP webhook without payment id', ['payload' => $data]);
             return response()->json(['message'=>'No payment id en webhook'], 400);
         }
 
@@ -195,10 +212,8 @@ class CheckoutProController extends Controller
             $statusMp = strtolower($payment['status'] ?? ($payment['collection_status'] ?? 'unknown'));
             $external = $payment['external_reference'] ?? null;
 
-            // mapeo a español para tu columna check
             $mapped = $this->mapMpStatusToLocal($statusMp);
 
-            // encontrar pago local
             $pago = pago::where('mp_payment_id', $paymentId)
                 ->orWhere('mp_preference_id', $payment['preference_id'] ?? null)
                 ->orWhere(function($q) use ($external) {
@@ -206,7 +221,6 @@ class CheckoutProController extends Controller
                 })->orderBy('created_at','desc')->first();
 
             if (!$pago) {
-                // creamos fallback record
                 $pago = pago::create([
                     'id_tiquete' => $external,
                     'id_usuario' => null,
@@ -228,7 +242,6 @@ class CheckoutProController extends Controller
                 $pago->save();
             }
 
-            // si aprobado => cerrar tiquete
             if ($mapped === 'aprobado' && $external) {
                 $tiquete = tiquete::find($external);
                 if ($tiquete) {
