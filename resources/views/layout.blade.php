@@ -50,7 +50,39 @@
     @media (max-width:576px){
       .header-inner{ padding:8px 12px; }
       #profileDropdown{ right:6px; left:auto; top:46px; width:200px; }
+
     }
+
+    :root{
+  --bg: #ffffff;
+  --card: #fff;
+  --muted: #6f6f6f;
+  --accent: #ffb300;
+  --accent-2: #52a8ff;
+  --shadow: 0 8px 30px rgba(0,0,0,0.05);
+
+  /* color primario del texto */
+  --text: #111111;
+}
+
+/* regla base — asegúrate que quede al final de tus estilos */
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* mantener enlaces legibles (si usas color:inherit en HTML) */
+a, a:link, a:visited, button, .logo-text, .avatar {
+  color: inherit;
+}
+
+/* si algún componente sigue blanco, forzamos color localmente */
+.site-header, .header-inner, .profile-area, #profileDropdown, main, .btn-ghost, .btn-action {
+  color: var(--text);
+}
+
   </style>
 
   <!-- Bootstrap CSS (CDN) - opcional si ya usas Bootstrap local -->
